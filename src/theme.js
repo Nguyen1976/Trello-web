@@ -1,21 +1,18 @@
+import { cyan, deepOrange, orange, teal } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
-import { red } from "@mui/material/colors";
 
-const theme = createTheme({
+export const lightTheme = createTheme({
   palette: {
-    primary: {
-      main: "#556cd6",
-    },
-    secondary: {
-      main: "#19857b",
-    },
-    error: {
-      main: red.A400,
-    },
-    text: {
-      secondary: red[500],
-    },
+    mode: "light",
+    primary: teal,
+    secondary: deepOrange,
   },
 });
 
-export default theme;
+export const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: cyan,
+    secondary: orange,
+  },
+});
