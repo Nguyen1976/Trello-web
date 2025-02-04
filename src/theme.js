@@ -7,6 +7,7 @@ export const lightTheme = createTheme({
     primary: teal,
     secondary: deepOrange,
   },
+  // spacing: (factor) => `${0.25 * factor}rem`,
 });
 
 export const darkTheme = createTheme({
@@ -15,4 +16,5 @@ export const darkTheme = createTheme({
     primary: cyan,
     secondary: orange,
   },
+  // spacing: (factor) => `${0.25 * factor}rem`,
 });
