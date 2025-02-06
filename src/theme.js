@@ -2,19 +2,25 @@ import { cyan, deepOrange, orange, teal } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
 export const lightTheme = createTheme({
+  trello: {
+    appBarHeight: "48px",
+    boardBarHeight: "48px",
+  },
   palette: {
     mode: "light",
     primary: teal,
     secondary: deepOrange,
   },
-  // spacing: (factor) => `${0.25 * factor}rem`,
 });
 
 export const darkTheme = createTheme({
+  trello: {
+    appBarHeight: "48px",
+    boardBarHeight: "48px",
+  },
   palette: {
     mode: "dark",
     primary: cyan,
     secondary: orange,
   },
-  // spacing: (factor) => `${0.25 * factor}rem`,
 });
