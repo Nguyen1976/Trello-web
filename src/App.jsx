@@ -1,15 +1,13 @@
-import Button from "@mui/material/Button";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import Typography from "@mui/material/Typography";
-
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider } from "@mui/material/styles";
-import { lightTheme, darkTheme } from "./theme.js";
 import { useState } from "react";
+import CssBaseline from "@mui/material/CssBaseline";
+import ThemeProvider from "@mui/material/styles/ThemeProvider";
+import { darkTheme, lightTheme } from "./theme.js";
 import Switch from "@mui/material/Switch";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { styled } from "@mui/material/styles";
-import { FormControlLabel } from "@mui/material";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import { useMediaQuery } from "@mui/material";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -73,25 +71,55 @@ function App() {
   const changeTheme = () => {
     setIsDarkMode((prev) => !prev);
   };
+
+  // const changeTheme = () => {
+  //   setMode("dark");
+  // };
+
   return (
     <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <CssBaseline />
-      <div>
-        <FormControlLabel
-          control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked />}
-          label="Dark Mode"
-          onChange={changeTheme}
-          checked={isDarkMode}
-        />
-        <div>Nguyên</div>
-        <Typography variant="body2" color="text.secondary">
-          Khà khà
-        </Typography>
-        <AccountBalanceIcon color="primary" />
-        <Button variant="text">Text</Button>
-        <Button variant="contained">Contained</Button>
-        <Button variant="outlined">Outlined</Button>
-      </div>
+      <Container disableGutters maxWidth={false} sx={{ height: "100vh" }}>
+        <Box
+          sx={{
+            backgroundColor: "primary.light",
+            width: "100%",
+            height: (theme) => theme.trello.appBarHeight,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <FormControlLabel
+            control={<MaterialUISwitch sx={{ m: 1 }} checked={isDarkMode} />}
+            label="Dark Mode"
+            onChange={changeTheme}
+          />
+        </Box>
+        <Box
+          sx={{
+            backgroundColor: "primary.dark",
+            width: "100%",
+            height: (theme) => theme.trello.boardBarHeight,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          Board Bar
+        </Box>
+        <Box
+          sx={{
+            backgroundColor: "primary.main",
+            width: "100%",
+            height: (theme) =>
+              `calc(100vh - (${theme.trello.boardBarHeight} + ${theme.trello.boardBarHeight}))`,
+
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          Board Content
+        </Box>
+      </Container>
     </ThemeProvider>
   );
 }
