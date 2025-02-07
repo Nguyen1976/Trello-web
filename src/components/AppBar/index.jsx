@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import ModeToggle from ".././ModeToggle";
+import ModeToggle from "~/components/ModeToggle";
 
 function AppBar() {
   return (
