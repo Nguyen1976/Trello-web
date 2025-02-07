@@ -3,6 +3,7 @@ import { useMediaQuery } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
+import { useMode } from "~/context/ModeContext";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -60,29 +61,15 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-// eslint-disable-next-line react/prop-types
 function ModeToggle() {
-  const isDarkModeWindow = useMediaQuery("(prefers-color-scheme: dark)");
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const mode = localStorage.getItem("mode");
-    if (mode === null) return isDarkModeWindow;
-    return mode === "dark";
-  });
+  const { isDarkMode, setIsDarkMode } = useMode();
 
-  useEffect(() => {
-    const storedMode = localStorage.getItem("mode");
-    if (storedMode === "dark" && !isDarkMode) {
-      setIsDarkMode(true);
-    } else if (storedMode === "light" && isDarkMode) {
-      setIsDarkMode(false);
-    }
-  }, []);
-
-  const changeTheme = (event) => {
-    const newMode = event.target.checked ? "dark" : "light";
-    setIsDarkMode(event.target.checked);
-    localStorage.setItem("mode", newMode);
-    window.dispatchEvent(new Event("storage")); // Đảm bảo cập nhật theme ngay lập tức
+  const changeTheme = () => {
+    setIsDarkMode((prev) => {
+      const newMode = !prev ? "dark" : "light";
+      localStorage.setItem("mode", newMode);
+      return !prev;
+    });
   };
 
   return (
