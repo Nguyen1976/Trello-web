@@ -3,8 +3,8 @@ import { createTheme } from "@mui/material/styles";
 
 export const lightTheme = createTheme({
   trello: {
-    appBarHeight: "48px",
-    boardBarHeight: "48px",
+    appBarHeight: "58px",
+    boardBarHeight: "60px",
   },
   palette: {
     mode: "light",
@@ -15,8 +15,8 @@ export const lightTheme = createTheme({
 
 export const darkTheme = createTheme({
   trello: {
-    appBarHeight: "48px",
-    boardBarHeight: "48px",
+    appBarHeight: "58px",
+    boardBarHeight: "60px",
   },
   palette: {
     mode: "dark",

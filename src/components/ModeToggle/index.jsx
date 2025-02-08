@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { useMediaQuery } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
@@ -81,7 +79,6 @@ function ModeToggle() {
           onChange={changeTheme}
         />
       }
-      label="Dark Mode"
     />
   );
 }
