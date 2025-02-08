@@ -72,13 +72,8 @@ function ModeToggle() {
 
   return (
     <FormControlLabel
-      control={
-        <MaterialUISwitch
-          sx={{ m: 1 }}
-          checked={isDarkMode}
-          onChange={changeTheme}
-        />
-      }
+      control={<MaterialUISwitch checked={isDarkMode} onChange={changeTheme} />}
+      sx={{ m: 0 }}
     />
   );
 }

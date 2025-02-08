@@ -32,7 +32,7 @@ function Workspaces() {
         onClick={handleClick}
         endIcon={<ExpandMoreIcon color="primary" />}
       >
-        workspaces
+        Workspaces
       </Button>
       <Menu
         id="basic-menu-workspaces"
