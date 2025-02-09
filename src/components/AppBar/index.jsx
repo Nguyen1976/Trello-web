@@ -8,6 +8,7 @@ import Badge from "@mui/material/Badge";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import Tooltip from "@mui/material/Tooltip";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 
 import ModeToggle from "~/components/ModeToggle";
 import Workspaces from "./Menus/Workspaces";
@@ -19,8 +20,8 @@ import Profiles from "./Menus/Profiles";
 function AppBar() {
   return (
     <Box
-      px={2}
       sx={{
+        px: 2,
         width: "100%",
         height: (theme) => theme.trello.appBarHeight,
         display: "flex",
@@ -50,7 +51,9 @@ function AppBar() {
           <Recent />
           <Starered />
           <Templates />
-          <Button variant="outlined">Create</Button>
+          <Button variant="outlined" startIcon={<LibraryAddIcon />}>
+            Create
+          </Button>
         </Box>
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>

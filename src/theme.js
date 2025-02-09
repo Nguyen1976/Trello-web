@@ -17,14 +17,14 @@ export const lightTheme = createTheme({
         body: {
           "*::-webkit-scrollbar": {
             width: "8px",
-            height: "1px",
+            height: "4px",
           },
           "*::-webkit-scrollbar-thumb": {
             backgroundColor: "#bdc3c7",
-            borderRadius: "8px",
+            borderRadius: "15px",
           },
           "*::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "blue",
+            backgroundColor: "#94989b",
           },
         },
       },
@@ -82,14 +82,14 @@ export const darkTheme = createTheme({
         body: {
           "*::-webkit-scrollbar": {
             width: "8px",
-            height: "1px",
+            height: "4px",
           },
           "*::-webkit-scrollbar-thumb": {
             backgroundColor: "#bdc3c7",
-            borderRadius: "8px",
+            borderRadius: "15px",
           },
           "*::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "#00b894",
+            backgroundColor: "#94989b",
           },
         },
       },
