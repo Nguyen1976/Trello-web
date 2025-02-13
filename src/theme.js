@@ -1,10 +1,15 @@
 // import { cyan, deepOrange, orange, teal } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
+const APP_BAR_HEIGHT = "58px";
+const BOARD_BAR_HEIGHT = "60px";
+const BOARD_CONTENT_HEIGHT = `calc(100vh - (${APP_BAR_HEIGHT} + ${BOARD_BAR_HEIGHT}))`;
+
 export const lightTheme = createTheme({
   trello: {
-    appBarHeight: "58px",
-    boardBarHeight: "60px",
+    appBarHeight: APP_BAR_HEIGHT,
+    boardBarHeight: BOARD_BAR_HEIGHT,
+    boardContentHeight: BOARD_CONTENT_HEIGHT,
   },
   palette: {
     mode: "light",
@@ -18,11 +23,11 @@ export const lightTheme = createTheme({
             height: "8px",
           },
           "*::-webkit-scrollbar-thumb": {
-            backgroundColor: "#dcdde1",
+            backgroundColor: "#bdc3c7",
             borderRadius: "15px",
           },
           "*::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "white",
+            backgroundColor: "#aab1b5",
           },
         },
       },
@@ -39,7 +44,16 @@ export const lightTheme = createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          fontSize: "0,875rem",
+          fontSize: "0.875rem",
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          "&.MuiTypography-body1": {
+            fontSize: "0.875rem",
+          },
         },
       },
     },
@@ -64,8 +78,9 @@ export const lightTheme = createTheme({
 
 export const darkTheme = createTheme({
   trello: {
-    appBarHeight: "58px",
-    boardBarHeight: "60px",
+    appBarHeight: APP_BAR_HEIGHT,
+    boardBarHeight: BOARD_BAR_HEIGHT,
+    boardContentHeight: BOARD_CONTENT_HEIGHT,
   },
   palette: {
     mode: "dark",
@@ -103,6 +118,15 @@ export const darkTheme = createTheme({
           color: theme.palette.primary.main,
           fontSize: "0,875rem",
         }),
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          "&.MuiTypography-body1": {
+            fontSize: "0.875rem",
+          },
+        },
       },
     },
     MuiOutlinedInput: {

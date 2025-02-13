@@ -38,7 +38,7 @@ function BoardBar() {
         overflowX: "auto",
         bgcolor: (theme) =>
           theme.palette.mode === "dark" ? "#34495e" : "#1976d2",
-        borderBottom: "1px solid #00bfa5",
+        borderBottom: "1px solid #fff",
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -95,16 +95,16 @@ function BoardBar() {
                 width: 34,
                 height: 34,
                 fontSize: 16,
-                border: "none",
+                border: "white",
+                cursor: "pointer",
+                "&:first-of-style": { bgcolor: "#a4b0be" },
               },
             }}
           >
             <Avatar alt="Nguyên" src="/static/images/avatar/1.jpg" />
-            <Avatar alt="Nguyên" src="/static/images/avatar/1.jpg" />
-            <Avatar alt="Nguyên" src="/static/images/avatar/1.jpg" />
-            <Avatar alt="Nguyên" src="/static/images/avatar/1.jpg" />
-            <Avatar alt="Nguyên" src="/static/images/avatar/1.jpg" />
-            <Avatar alt="Nguyên" src="/static/images/avatar/1.jpg" />
+            <Avatar alt="Huy" src="/static/images/avatar/1.jpg" />
+            <Avatar alt="Dũng" src="/static/images/avatar/1.jpg" />
+            <Avatar alt="Quốc" src="/static/images/avatar/1.jpg" />
           </AvatarGroup>
         </Tooltip>
       </Box>
