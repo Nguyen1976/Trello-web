@@ -12,7 +12,7 @@ import Tooltip from "@mui/material/Tooltip";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 
-import ModeToggle from "~/components/ModeToggle";
+import ModeToggle from "~/components/ModeToggle/ModeToggle";
 import Workspaces from "./Menus/Workspaces";
 import Recent from "./Menus/Recent";
 import Starered from "./Menus/Starered";
