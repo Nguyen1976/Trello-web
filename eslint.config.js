@@ -24,7 +24,6 @@ export default [
       "react-refresh": reactRefresh,
     },
     rules: {
-      "react/prop-types": "off",
       ...js.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
@@ -34,6 +33,7 @@ export default [
         "warn",
         { allowConstantExport: true },
       ],
+      "react/prop-types": "off",
     },
   },
 ];
