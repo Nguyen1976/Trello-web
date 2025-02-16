@@ -2,14 +2,15 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import VpnLockIcon from "@mui/icons-material/VpnLock";
-import AddToDriveIcon from "@mui/icons-material/AddToDrive";
-import BoltIcon from "@mui/icons-material/Bolt";
-import FilterListIcon from "@mui/icons-material/FilterList";
+// import AddToDriveIcon from "@mui/icons-material/AddToDrive";
+// import BoltIcon from "@mui/icons-material/Bolt";
+// import FilterListIcon from "@mui/icons-material/FilterList";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { capitalizeFirstLetter } from "~/utils/formatters";
 
 const MENU_STYLES = {
   color: "white",
@@ -24,7 +25,7 @@ const MENU_STYLES = {
   },
 };
 
-function BoardBar() {
+function BoardBar({ board }) {
   return (
     <Box
       sx={{
@@ -44,19 +45,19 @@ function BoardBar() {
         <Chip
           sx={MENU_STYLES}
           icon={<DashboardIcon />}
-          label="Đẹp try nhất thế giới"
+          label={board?.title}
           clickable
         />
         <Chip
           sx={MENU_STYLES}
           icon={<VpnLockIcon />}
-          label="Public/Private Workspace"
+          label={capitalizeFirstLetter(board?.type)}
           clickable
         />
-        <Chip
+        {/* <Chip
           sx={MENU_STYLES}
           icon={<AddToDriveIcon />}
-          label="Add To Google Drive"
+          label={}
           clickable
         />
         <Chip
@@ -70,7 +71,7 @@ function BoardBar() {
           icon={<FilterListIcon />}
           label="Filters"
           clickable
-        />
+        /> */}
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         <Button
