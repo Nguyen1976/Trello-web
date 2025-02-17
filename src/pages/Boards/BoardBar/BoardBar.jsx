@@ -101,10 +101,10 @@ function BoardBar({ board }) {
               },
             }}
           >
-            <Avatar alt="Nguyên" src="/static/images/avatar/1.jpg" />
-            <Avatar alt="Huy" src="/static/images/avatar/1.jpg" />
-            <Avatar alt="Dũng" src="/static/images/avatar/1.jpg" />
-            <Avatar alt="Quốc" src="/static/images/avatar/1.jpg" />
+            <Avatar alt="Nguyên" src="" />
+            <Avatar alt="Huy" src="" />
+            <Avatar alt="Dũng" src="" />
+            <Avatar alt="Quốc" src="" />
           </AvatarGroup>
         </Tooltip>
       </Box>

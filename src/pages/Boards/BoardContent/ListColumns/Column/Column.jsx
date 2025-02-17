@@ -17,11 +17,24 @@ import ContentCopy from "@mui/icons-material/ContentCopy";
 import ContentPaste from "@mui/icons-material/ContentPaste";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
-import ListCards from "./ListCards/ListCards";
-
 import { mapOrder } from "~/utils/sorts";
 
+import ListCards from "./ListCards/ListCards";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 function Column({ column }) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: column._id, data: { ...column } });
+
+  const dndKitColumnStyles = {
+    useSelect: "none",//Khi kéo trên mobile bị select các phần tử gây cảm giác khó chịu
+    //Nếu sử dụng CSS.Transform như docx sẽ lỗi stretch
+    //https://github.com/clauderic/dnd-kit/issues/117
+    transform: CSS.Translate.toString(transform),
+    transition,
+  };
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -34,6 +47,10 @@ function Column({ column }) {
   const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
   return (
     <Box
+      ref={setNodeRef}
+      style={dndKitColumnStyles}
+      {...attributes}
+      {...listeners}
       sx={{
         minWidth: "300px",
         maxWidth: "300px",
