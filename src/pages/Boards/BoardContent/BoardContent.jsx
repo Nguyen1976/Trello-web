@@ -12,6 +12,7 @@ import {
   useSensors,
   DragOverlay,
   defaultDropAnimationSideEffects,
+  closestCorners,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { cloneDeep } from "lodash";
@@ -153,13 +154,11 @@ function BoardContent({ board }) {
             activeDraggingCardData
           );
 
-
           nextOverColumn.cardOrderIds = nextOverColumn.cards.map(
             (card) => card._id
           );
         }
 
-        
         return nextColumns;
       });
     }
@@ -202,6 +201,9 @@ function BoardContent({ board }) {
   return (
     <DndContext
       sensors={sensors}
+      //Thuật toán phát hiện va chạm sửa dụng closestCorners thay vì closetCenter
+      //https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms
+      collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
