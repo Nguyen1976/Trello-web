@@ -53,8 +53,11 @@ function BoardContent({ board }) {
   const [orderedColumns, setOrderedColumns] = useState([]);
 
   //Cùng 1 thời điểm chỉ có 1 phần tử đang được kéo (column, card)
+  const [activeDragItemId, setActiveDragItemId] = useState(null);
   const [activeDragItemType, setActiveDragItemType] = useState(null);
   const [activeDragItemData, setActiveDragItemData] = useState(null);
+  const [oldColumnWhenDraggingCard, setOldColumnWhenDraggingCard] =
+    useState(null);
 
   useEffect(() => {
     setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, "_id"));
@@ -67,7 +70,7 @@ function BoardContent({ board }) {
     );
   };
 
-  //Khi bắt đầu kéo
+  //When the drag starts
   const handleDragStart = (event) => {
     setActiveDragItemType(
       event?.active?.data?.current?.columnId
@@ -75,30 +78,37 @@ function BoardContent({ board }) {
         : ACTIVE_DRAG_ITEM_TYPE.COLUMN
     );
     setActiveDragItemData(event?.active?.data?.current);
+    setActiveDragItemId(event?.active?.data?.current?._id);
+
+    //If Card is being dragging then setOldColumnWhenDraggingCard
+    if (event?.active?.data?.current?.columnId) {
+      setOldColumnWhenDraggingCard(findColumnByCardId(event?.active?.id));
+    }
   };
 
-  //Trigger trong quá trình kéo (drag) 1 phần tử
+  //Trigger during the process of dragging an element
   const handleDragOver = (event) => {
-    //Không làm gì nếu kéo column
+    //do nothing if drag column
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) return;
+
     const { active, over } = event;
 
-    if (!over || !active) return; //Không tồn tại over tức là đã kéo ra ngoài
+    if (!over || !active) return; //No over over means dragged out
 
-    //activeDraggingCard đang được kéo (active)
+    //activeDraggingCard is being dragged (active)
     const {
       id: activeDraggingCardId,
       data: { current: activeDraggingCardData },
     } = active;
     const { id: overCardId } = over;
 
-    //Find Column theo cardId
+    //Find the column by cardId
     const activeColumn = findColumnByCardId(activeDraggingCardId);
     const overColumn = findColumnByCardId(overCardId);
 
     if (!activeColumn || !overColumn) return;
 
-    //Xử lý logic kéo card qua column khác còn nếu kéo card vào chính nó thì sẽ không làm gì cả
+    //logic handling to drag to another column but if you drag into itself it does nothing
     //Còn việc kéo xong xuôi vào 1 column khác thì handleDragEnd xử lý
     if (activeColumn._id !== overColumn._id) {
       setOrderedColumns((prevColumns) => {
@@ -165,27 +175,82 @@ function BoardContent({ board }) {
   };
 
   const handleDragEnd = (event) => {
-    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
-      console.log("kéo thả card");
-    }
-
     const { active, over } = event;
 
     if (!over) return;
+    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
+      //activeDraggingCard is being dragged (active)
+      const {
+        id: activeDraggingCardId,
+        data: { current: activeDraggingCardData },
+      } = active;
+      const { id: overCardId } = over;
 
-    if (active.id !== over.id) {
-      //Lấy vị trí cũ từ thằng active
-      const oldIndex = orderedColumns.findIndex((c) => c._id === active.id);
-      //Vị trí vừa thả ra từ thằng over
-      const newIndex = orderedColumns.findIndex((c) => c._id === over.id);
+      //Find the column by cardId
+      const activeColumn = findColumnByCardId(activeDraggingCardId);
+      const overColumn = findColumnByCardId(overCardId);
 
-      //Sử dụng arrayMove để tạo ra 1 mảng mới sau khi đã đổi vị trí của 2 column trong mảng
-      setOrderedColumns(arrayMove(orderedColumns, oldIndex, newIndex));
+      if (!activeColumn || !overColumn) return;
+      //oldColumnWhenDraggingCard is be set when handleDragStart
+      if (oldColumnWhenDraggingCard._id !== overColumn._id) {
+        //Drag and drop card action between two columns
+      } else {
+        // Drag and drop card action in a column
 
-      //call api cập nhật thứ tự column
+        const oldCardIndex = oldColumnWhenDraggingCard?.cards?.findIndex(
+          (c) => c._id === activeDragItemId
+        );
+
+        const newCardIndex = overColumn?.cards?.findIndex(
+          (c) => c._id === overCardId
+        );
+
+        //use ArrayMove to update card's location
+        const dndOrderedCards = arrayMove(
+          oldColumnWhenDraggingCard?.cards,
+          oldCardIndex,
+          newCardIndex
+        );
+
+        setOrderedColumns((prevColumns) => {
+          const nextColumns = cloneDeep(prevColumns);
+
+          //Find Column is being dropped
+          const targetColumn = nextColumns.find(
+            (c) => c._id === overColumn._id
+          );
+
+          //Update new two values is card and cardOrderIds in targetColumn
+          targetColumn.cards = dndOrderedCards;
+          targetColumn.cardOrderIds = dndOrderedCards.map((card) => card._id);
+          return nextColumns;
+        });
+
+
+        //Call api update card's location
+      }
     }
+
+    //Handle drag and drop column
+    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
+      if (active.id !== over.id) {
+        //Get old position from active
+        const oldIndex = orderedColumns.findIndex((c) => c._id === active.id);
+        //The position will be dropped column down.
+        const newIndex = orderedColumns.findIndex((c) => c._id === over.id);
+
+        //Use arrayMove to create new arr after swapping the positions of 2 columns in the array
+        setOrderedColumns(arrayMove(orderedColumns, oldIndex, newIndex));
+
+        //call api to update column order
+      }
+    }
+
+    //The data after drag and drop will be reset
+    setActiveDragItemId(null);
     setActiveDragItemType(null);
     setActiveDragItemData(null);
+    setOldColumnWhenDraggingCard(null);
   };
 
   const dropAnimation = {
@@ -218,6 +283,7 @@ function BoardContent({ board }) {
         }}
       >
         <ListColumns columns={orderedColumns} />
+        {/* Overlay giữ chỗ cho card và column */}
         <DragOverlay dropAnimation={dropAnimation}>
           {!activeDragItemType && null}
           {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && (
