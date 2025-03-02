@@ -69,6 +69,83 @@ function BoardContent({ board }) {
       column?.cards?.map((card) => card._id)?.includes(cardId)
     );
   };
+  //Func chung xử lý việc cập nhật state trong việc di chuyển giữa các column khác nhau
+  const moveCardBetweenDifferentColumns = (
+    overColumn,
+    overCardId,
+    active,
+    over,
+    activeColumn,
+    activeDraggingCardId,
+    activeDraggingCardData
+  ) => {
+    setOrderedColumns((prevColumns) => {
+      //Tìm vị trí (index) của overCard trong column đích (nơi card sắp được thả)
+      const overCardIndex = overColumn?.cards?.findIndex(
+        (card) => card._id === overCardId
+      );
+
+      //Logic tính toán cho cardIndex mới tức là tính toán nơi để card được thả xuống
+      //Logic này lấy chuẩn ra từ code của thư viện
+      let newCardIndex;
+      const isBelowOverItem =
+        active.rect.current.translated &&
+        active.rect.current.translated.top > over.rect.top + over.rect.height;
+      const modifier = isBelowOverItem ? 1 : 0;
+      newCardIndex =
+        overCardIndex >= 0
+          ? overCardIndex + modifier
+          : overColumn?.cards?.length + 1;
+
+      const nextColumns = cloneDeep(prevColumns);
+      const nextActiveColumn = nextColumns.find(
+        (column) => column._id === activeColumn._id
+      );
+      const nextOverColumn = nextColumns.find(
+        (column) => column._id === overColumn._id
+      );
+
+      //Column cũ
+      if (nextActiveColumn) {
+        //Xóa card ở cái column active
+        nextActiveColumn.cards = nextActiveColumn.cards.filter(
+          (card) => card._id !== activeDraggingCardId
+        );
+
+        //Cập nhật lại mảng cardOrderIds
+        nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(
+          (card) => card._id
+        );
+      }
+
+      //Column mới
+      if (nextOverColumn) {
+        //Kiểm tra xem cái card đang kéo tồn tại ở overColumn chưa, nếu có thì xóa nó đi
+        nextOverColumn.cards = nextOverColumn.cards.filter(
+          (card) => card._id !== activeDraggingCardId
+        );
+
+        //phải cập nhật lại chuẩn dữ liệu columnId trong card
+        const rebuld_activeDraggingCardData = {
+          ...activeDraggingCardData,
+          columnId: nextOverColumn._id,
+        };
+
+        //Thêm cái card đang kéo vào column, vị trí index mới
+        nextOverColumn.cards = nextOverColumn.cards.toSpliced(
+          newCardIndex,
+          0,
+          rebuld_activeDraggingCardData
+        );
+
+        nextOverColumn.cardOrderIds = nextOverColumn.cards.map(
+          (card) => card._id
+        );
+      }
+
+      return nextColumns;
+    });
+  };
 
   //When the drag starts
   const handleDragStart = (event) => {
@@ -111,66 +188,16 @@ function BoardContent({ board }) {
     //logic handling to drag to another column but if you drag into itself it does nothing
     //Còn việc kéo xong xuôi vào 1 column khác thì handleDragEnd xử lý
     if (activeColumn._id !== overColumn._id) {
-      setOrderedColumns((prevColumns) => {
-        //Tìm vị trí (index) của overCard trong column đích (nơi card sắp được thả)
-        const overCardIndex = overColumn?.cards?.findIndex(
-          (card) => card._id === overCardId
-        );
-
-        //Logic tính toán cho cardIndex mới tức là tính toán nơi để card được thả xuống
-        //Logic này lấy chuẩn ra từ code của thư viện
-        let newCardIndex;
-        const isBelowOverItem =
-          active.rect.current.translated &&
-          active.rect.current.translated.top > over.rect.top + over.rect.height;
-        const modifier = isBelowOverItem ? 1 : 0;
-        newCardIndex =
-          overCardIndex >= 0
-            ? overCardIndex + modifier
-            : overColumn?.cards?.length + 1;
-
-        const nextColumns = cloneDeep(prevColumns);
-        const nextActiveColumn = nextColumns.find(
-          (column) => column._id === activeColumn._id
-        );
-        const nextOverColumn = nextColumns.find(
-          (column) => column._id === overColumn._id
-        );
-
-        //Column cũ
-        if (nextActiveColumn) {
-          //Xóa card ở cái column active
-          nextActiveColumn.cards = nextActiveColumn.cards.filter(
-            (card) => card._id !== activeDraggingCardId
-          );
-
-          //Cập nhật lại mảng cardOrderIds
-          nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(
-            (card) => card._id
-          );
-        }
-
-        //Column mới
-        if (nextOverColumn) {
-          //Kiểm tra xem cái card đang kéo tồn tại ở overColumn chưa, nếu có thì xóa nó đi
-          nextOverColumn.cards = nextOverColumn.cards.filter(
-            (card) => card._id !== activeDraggingCardId
-          );
-
-          //Thêm cái card đang kéo vào column, vị trí index mới
-          nextOverColumn.cards = nextOverColumn.cards.toSpliced(
-            newCardIndex,
-            0,
-            activeDraggingCardData
-          );
-
-          nextOverColumn.cardOrderIds = nextOverColumn.cards.map(
-            (card) => card._id
-          );
-        }
-
-        return nextColumns;
-      });
+      //setOrderedColumns
+      moveCardBetweenDifferentColumns(
+        overColumn,
+        overCardId,
+        active,
+        over,
+        activeColumn,
+        activeDraggingCardId,
+        activeDraggingCardData
+      );
     }
   };
 
@@ -194,6 +221,16 @@ function BoardContent({ board }) {
       //oldColumnWhenDraggingCard is be set when handleDragStart
       if (oldColumnWhenDraggingCard._id !== overColumn._id) {
         //Drag and drop card action between two columns
+        //setOrderedColumns
+        moveCardBetweenDifferentColumns(
+          overColumn,
+          overCardId,
+          active,
+          over,
+          activeColumn,
+          activeDraggingCardId,
+          activeDraggingCardData
+        );
       } else {
         // Drag and drop card action in a column
 
@@ -225,7 +262,6 @@ function BoardContent({ board }) {
           targetColumn.cardOrderIds = dndOrderedCards.map((card) => card._id);
           return nextColumns;
         });
-
 
         //Call api update card's location
       }
