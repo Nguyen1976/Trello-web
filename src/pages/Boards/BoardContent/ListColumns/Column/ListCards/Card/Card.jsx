@@ -13,17 +13,23 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 function Card({ card }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: card._id, data: { ...card } });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: card._id, data: { ...card } });
 
   const dndKitCardStyles = {
-    useSelect: "none", //Khi kéo trên mobile bị select các phần tử gây cảm giác khó chịu
+    userSelect: "none", //Khi kéo trên mobile bị select các phần tử gây cảm giác khó chịu
     //Nếu sử dụng CSS.Transform như docx sẽ lỗi stretch
     //https://github.com/clauderic/dnd-kit/issues/117
     transform: CSS.Translate.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : undefined,
-    border: isDragging ? '1px solid #74b9ff' : undefined,
+    opacity: isDragging ? 0.5 : 1,
+    border: isDragging ? "1px solid #74b9ff" : "none",
   };
 
   const shouldShowCardActions = () => {

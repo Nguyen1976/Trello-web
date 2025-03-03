@@ -28,7 +28,7 @@ function Column({ column }) {
     useSortable({ id: column._id, data: { ...column } });
 
   const dndKitColumnStyles = {
-    useSelect: "none", //Khi kéo trên mobile bị select các phần tử gây cảm giác khó chịu
+    userSelect: "none", //Khi kéo trên mobile bị select các phần tử gây cảm giác khó chịu
     //Nếu sử dụng CSS.Transform như docx sẽ lỗi stretch
     //https://github.com/clauderic/dnd-kit/issues/117
     transform: CSS.Translate.toString(transform),

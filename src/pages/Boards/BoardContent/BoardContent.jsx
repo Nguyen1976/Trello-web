@@ -14,9 +14,9 @@ import {
   defaultDropAnimationSideEffects,
   closestCorners,
   pointerWithin,
-  rectIntersection,
+  // rectIntersection,
   getFirstCollision,
-  closestCenter,
+  // closestCenter,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { cloneDeep } from "lodash";
@@ -315,20 +315,23 @@ function BoardContent({ board }) {
       //Finding intersections and collisions with the pointer
       const pointerIntersection = pointerWithin(args);
 
-      //The collision detection algorithm returns an array of collisions
-      const intersections = !!pointerIntersection?.length
-        ? pointerIntersection
-        : rectIntersection(args);
+      //If pointerIntersection is null, return;, avoid flickering error
+      if (!pointerIntersection?.length) return;
 
-      //Finding first overId in "intersections"
-      let overId = getFirstCollision(intersections, "id");
+      //The collision detection algorithm returns an array of collisions
+      // const intersections = !!pointerIntersection?.length
+      //   ? pointerIntersection
+      //   : rectIntersection(args);
+
+      //Finding first overId in "pointerIntersection"
+      let overId = getFirstCollision(pointerIntersection, "id");
 
       if (overId) {
         const checkColumn = orderedColumns.find(
           (column) => column._id === overId
         );
         if (checkColumn) {
-          overId = closestCenter({
+          overId = closestCorners({
             ...args,
             droppableContainers: args.droppableContainers.filter(
               (container) =>
