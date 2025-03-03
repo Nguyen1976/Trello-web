@@ -34,9 +34,9 @@ function Card({ card }) {
 
   const shouldShowCardActions = () => {
     return (
-      !!card?.memberIds.length ||
-      !!card?.comments.length ||
-      !!card?.attachments.length
+      !!card?.memberIds?.length ||
+      !!card?.comments?.length ||
+      !!card?.attachments?.length
     );
   };
   return (
@@ -49,12 +49,13 @@ function Card({ card }) {
         cursor: "pointer",
         boxShadow: "0 1px 1px rgba(0, 0, 0, 0.2)",
         overflow: "unset",
+        display: card?.FE_PlaceholderCard ? "none" : "block",
       }}
     >
       {card?.cover && (
         <CardMedia
           sx={{ height: 140 }}
-          image={card.cover}
+          image={card?.cover}
           title="green iguana"
         />
       )}
@@ -68,19 +69,19 @@ function Card({ card }) {
       </CardContent>
       {shouldShowCardActions() && (
         <CardActions sx={{ p: "0 4px 8px 4px" }}>
-          {!!card?.memberIds.length && (
+          {!!card?.memberIds?.length && (
             <Button size="small" startIcon={<GroupIcon />}>
-              {card?.memberIds.length}
+              {card?.memberIds?.length}
             </Button>
           )}
-          {!!card?.comments.length && (
+          {!!card?.comments?.length && (
             <Button size="small" startIcon={<CommentIcon />}>
-              {card?.comments.length}
+              {card?.comments?.length}
             </Button>
           )}
-          {!!card?.attachments.length && (
+          {!!card?.attachments?.length && (
             <Button size="small" startIcon={<AttachmentIcon />}>
-              {card?.attachments.length}
+              {card?.attachments?.length}
             </Button>
           )}
         </CardActions>
