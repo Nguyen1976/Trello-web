@@ -50,6 +50,7 @@ function Card({ card }) {
         boxShadow: "0 1px 1px rgba(0, 0, 0, 0.2)",
         overflow: "unset",
         display: card?.FE_PlaceholderCard ? "none" : "block",
+        "&:hover": { borderColor: (theme) => theme.palette.primary.main },
       }}
     >
       {card?.cover && (
