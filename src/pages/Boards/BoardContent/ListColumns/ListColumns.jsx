@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import {
   SortableContext,
   horizontalListSortingStrategy,
@@ -21,7 +22,7 @@ function ListColumns({ columns }) {
 
   const addNewColumn = () => {
     if (!newColumnTitle) {
-      console.log("Please enter Column Title");
+      toast.error("Please enter Column Title");
       return;
     }
     //Gọi API ở đây
