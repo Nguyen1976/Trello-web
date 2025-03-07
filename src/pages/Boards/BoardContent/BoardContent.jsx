@@ -33,7 +33,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 
 //https://docs.dndkit.com/api-documentation/sensors Handle sensor
 
-function BoardContent({ board, createNewColumn, createNewCard }) {
+function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   // Require the mouse to move by 10 pixels before activating
   //   activationConstraint: {
@@ -295,9 +295,15 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
         const newIndex = orderedColumns.findIndex((c) => c._id === over.id);
 
         //Use arrayMove to create new arr after swapping the positions of 2 columns in the array
-        setOrderedColumns(arrayMove(orderedColumns, oldIndex, newIndex));
+        const dndOrderedColumns = arrayMove(orderedColumns, oldIndex, newIndex);
 
-        //call api to update column order
+        // const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id);
+        //dndOrderedColumns mảng lưu trạng thái sau khi kéo thả column
+        //call api to update column order with dndOrderedColumns
+        //....
+        moveColumns(dndOrderedColumns);
+
+        setOrderedColumns(dndOrderedColumns);
       }
     }
 
