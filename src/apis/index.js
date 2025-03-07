@@ -11,3 +11,15 @@ export const fetchBoardDetailsAPI = async (boardId) => {
   //Đối với việc chạy qua axios thì nó sẽ nằm trong request.data
   return response.data;
 };
+
+/**Columns */
+export const createNewColumnAPI = async (newColumnData) => {
+  const response = await axios.post(`${API_ROOT}/v1/columns`, newColumnData);
+  return response.data;
+};
+
+/**Cards */
+export const createNewCardAPI = async (newCardData) => {
+  const response = await axios.post(`${API_ROOT}/v1/cards`, newCardData);
+  return response.data;
+};
