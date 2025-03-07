@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import Box from "@mui/material/Box";
 import ListColumns from "./ListColumns/ListColumns";
 
-import { mapOrder } from "~/utils/sorts";
 import {
   DndContext,
   // PointerSensor,
@@ -33,7 +32,13 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 
 //https://docs.dndkit.com/api-documentation/sensors Handle sensor
 
-function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
+function BoardContent({
+  board,
+  createNewColumn,
+  createNewCard,
+  moveColumns,
+  moveCardInTheSameColumn,
+}) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   // Require the mouse to move by 10 pixels before activating
   //   activationConstraint: {
@@ -69,7 +74,7 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
   const lastOverId = useRef(null);
 
   useEffect(() => {
-    setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, "_id"));
+    setOrderedColumns(board?.columns);
   }, [board]);
 
   //Tìm column theo cardId
@@ -268,6 +273,8 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
           newCardIndex
         );
 
+        const dndOrderedCardIds = dndOrderedCards.map((card) => card._id);
+        //Vẫn gọi update state để tránh delay hoặc Flickering giao diện lúc kéo thả khi cần phải chờ call API
         setOrderedColumns((prevColumns) => {
           const nextColumns = cloneDeep(prevColumns);
 
@@ -278,11 +285,17 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
 
           //Update new two values is card and cardOrderIds in targetColumn
           targetColumn.cards = dndOrderedCards;
-          targetColumn.cardOrderIds = dndOrderedCards.map((card) => card._id);
+          targetColumn.cardOrderIds = dndOrderedCardIds;
           return nextColumns;
         });
 
-        //Call api update card's location
+        //Calling api update card's location
+        //Đây là props được truyền từ BoardContent để call APi update card's location
+        moveCardInTheSameColumn(
+          dndOrderedCards,
+          dndOrderedCardIds,
+          oldColumnWhenDraggingCard._id
+        );
       }
     }
 
@@ -296,14 +309,13 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
 
         //Use arrayMove to create new arr after swapping the positions of 2 columns in the array
         const dndOrderedColumns = arrayMove(orderedColumns, oldIndex, newIndex);
+        setOrderedColumns(dndOrderedColumns);
 
         // const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id);
         //dndOrderedColumns mảng lưu trạng thái sau khi kéo thả column
         //call api to update column order with dndOrderedColumns
         //....
         moveColumns(dndOrderedColumns);
-
-        setOrderedColumns(dndOrderedColumns);
       }
     }
 
