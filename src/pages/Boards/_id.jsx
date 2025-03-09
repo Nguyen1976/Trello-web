@@ -74,8 +74,14 @@ function Board() {
       (column) => column._id === createdCard.columnId
     );
     if (columnToUpdate) {
-      columnToUpdate.cards.push(createdCard);
-      columnToUpdate.cardOrderIds.push(createdCard);
+      if (columnToUpdate.cards.some((card) => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [createdCard];
+        columnToUpdate.cardOrderIds = [createdCard._id];
+      } else {
+        //Nếu đã có data thì push vào cuối mảng
+        columnToUpdate.cards.push(createdCard);
+        columnToUpdate.cardOrderIds.push(createdCard);
+      }
     }
     setBoard(newBoard);
   };
@@ -141,11 +147,16 @@ function Board() {
     setBoard(newBoard);
 
     //calling api
+    let prevCardOrderIds =
+      dndOrderedColumns.find((c) => c._id === prevColumnId)?.cardOrderIds || [];
+
+    //Khi column(prevCardOrderIds) còn mỗi card cuối cùng và kéo nó đi thì sẽ dẫn đến hiện tượng nó đẩy cả card giả(placeholder-card) lên BE dẫn đến lỗi
+    //Lên sẽ fix nếu tồn tại card giả thì sẽ gán nó về mảng rỗng
+    if (prevCardOrderIds[0].includes("placeholder-card")) prevCardOrderIds = [];
     moveCardToDifferentColumnAPI({
       currentCardId,
       prevColumnId,
-      prevCardOrderIds: dndOrderedColumns.find((c) => c._id === prevColumnId)
-        ?.cardOrderIds,
+      prevCardOrderIds,
       nextColumnId,
       nextCardOrderIds: dndOrderedColumns.find((c) => c._id === nextColumnId)
         ?.cardOrderIds,
