@@ -6,6 +6,8 @@ import { API_ROOT } from "~/utils/constants";
  * Chúng ta chỉ lên catch lỗi tập trung tại một nơi bằng cách sử dụng Interceptors trong axios
  * Interceptors là cách mà chúng ta đánh chặn giữa req và res để xử lý logic mà chúng ta muốn
  */
+
+/**Board */
 export const fetchBoardDetailsAPI = async (boardId) => {
   const response = await axios.get(`${API_ROOT}/v1/boards/${boardId}`);
   //Đối với việc chạy qua axios thì nó sẽ nằm trong request.data
@@ -15,6 +17,14 @@ export const fetchBoardDetailsAPI = async (boardId) => {
 export const updateBoardDetailsAPI = async (boardId, updateData) => {
   const response = await axios.put(
     `${API_ROOT}/v1/boards/${boardId}`,
+    updateData
+  );
+  return response.data;
+};
+
+export const moveCardToDifferentColumnAPI = async (updateData) => {
+  const response = await axios.put(
+    `${API_ROOT}/v1/boards/supports/moving_card`,
     updateData
   );
   return response.data;

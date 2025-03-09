@@ -38,6 +38,7 @@ function BoardContent({
   createNewCard,
   moveColumns,
   moveCardInTheSameColumn,
+  moveCardToDifferentColumn,
 }) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   // Require the mouse to move by 10 pixels before activating
@@ -91,7 +92,8 @@ function BoardContent({
     over,
     activeColumn,
     activeDraggingCardId,
-    activeDraggingCardData
+    activeDraggingCardData,
+    triggerFrom
   ) => {
     setOrderedColumns((prevColumns) => {
       //Tìm vị trí (index) của overCard trong column đích (nơi card sắp được thả)
@@ -167,6 +169,17 @@ function BoardContent({
         );
       }
 
+      //Vì đây là hàm dùng chung cả lúc over và end mà chúng ta chỉ cần call api lúc end để tối ưu được performence
+      if (triggerFrom === "handleDragEnd") {
+        //calling api
+        moveCardToDifferentColumn(
+          activeDraggingCardData._id,
+          oldColumnWhenDraggingCard._id,
+          nextOverColumn._id,
+          nextColumns
+        );
+      }
+
       return nextColumns;
     });
   };
@@ -220,7 +233,8 @@ function BoardContent({
         over,
         activeColumn,
         activeDraggingCardId,
-        activeDraggingCardData
+        activeDraggingCardData,
+        "handleDragOver"
       );
     }
   };
@@ -253,7 +267,8 @@ function BoardContent({
           over,
           activeColumn,
           activeDraggingCardId,
-          activeDraggingCardData
+          activeDraggingCardData,
+          "handleDragEnd"
         );
       } else {
         // Drag and drop card action in a column
