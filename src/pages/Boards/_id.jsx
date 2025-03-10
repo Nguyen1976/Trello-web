@@ -7,7 +7,6 @@ import BoardContent from "./BoardContent/BoardContent";
 // import { mockData } from "~/apis/mock-data";
 import { mapOrder } from "~/utils/sorts";
 import {
-  fetchBoardDetailsAPI,
   createNewColumnAPI,
   createNewCardAPI,
   updateBoardDetailsAPI,
@@ -16,31 +15,42 @@ import {
   deleteColumnDetailsAPI,
 } from "~/apis";
 import { generatePlaceholderCard } from "~/utils/formatters";
-import { isEmpty } from "lodash";
+import { cloneDeep } from "lodash";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
+import {
+  fetchBoardDetailsAPI,
+  updateCurrentActiveBoard,
+  selectCurrentActiveBoard,
+} from "~/redux/activeBoard/activeBoardSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 function Board() {
-  const [board, setBoard] = useState(null);
+  const dispatch = useDispatch();
+  // const [board, setBoard] = useState(null);
+  const board = useSelector(selectCurrentActiveBoard);
 
   useEffect(() => {
     const boardId = "67c868e67a889567f62a968d";
     //call-api
+    dispatch(fetchBoardDetailsAPI(boardId));
+
     //Xử lý khi gen ra 1 column rỗng phải thêm 1 cái placehoderCard vào
-    fetchBoardDetailsAPI(boardId).then((board) => {
-      board.columns = mapOrder(board?.columns, board?.columnOrderIds, "_id");
-      board.columns.forEach((column) => {
-        if (isEmpty(column.cards)) {
-          column.cards = [generatePlaceholderCard(column)];
-          column.cardOrderIds = [generatePlaceholderCard(column)._id];
-        } else {
-          column.cards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
-        }
-      });
-      setBoard(board);
-    });
-  }, []);
+    //Cách làm cũ
+    // fetchBoardDetailsAPI(boardId).then((board) => {
+    //   board.columns = mapOrder(board?.columns, board?.columnOrderIds, "_id");
+    //   board.columns.forEach((column) => {
+    //     if (isEmpty(column.cards)) {
+    //       column.cards = [generatePlaceholderCard(column)];
+    //       column.cardOrderIds = [generatePlaceholderCard(column)._id];
+    //     } else {
+    //       column.cards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
+    //     }
+    //   });
+    //   setBoard(board);
+    // });
+  }, [dispatch]);
 
   //Func có nhiệm vụ gọi API tại column và làm lại dữ liệu state board
   /**
@@ -56,11 +66,11 @@ function Board() {
     createdColumn.cards = [generatePlaceholderCard(createdColumn)];
     createdColumn.cardOrderIds = [generatePlaceholderCard(createdColumn)._id];
 
-    const newBoard = { ...board };
+    const newBoard = cloneDeep(board);
     newBoard.columns.push(createdColumn);
     newBoard.columnOrderIds.push(createdColumn._id);
 
-    setBoard(newBoard);
+    dispatch(updateCurrentActiveBoard(newBoard));
   };
 
   const createNewCard = async (newCardData) => {
@@ -70,7 +80,7 @@ function Board() {
     });
 
     //cập nhật state board
-    const newBoard = { ...board };
+    const newBoard = cloneDeep(board);
     const columnToUpdate = newBoard.columns.find(
       (column) => column._id === createdCard.columnId
     );
@@ -84,7 +94,7 @@ function Board() {
         columnToUpdate.cardOrderIds.push(createdCard);
       }
     }
-    setBoard(newBoard);
+    dispatch(updateCurrentActiveBoard(newBoard));
   };
 
   //Call API xử lý khi kéo thả column xong
@@ -92,11 +102,12 @@ function Board() {
   const moveColumns = (dndOrderedColumns) => {
     const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id);
 
+    //Trường hợp này k phải dùng cloneDeep vì chúng ta gán lại nó bằng một mảng mới chứ không mở rộng kiểu push
     const newBoard = { ...board };
     newBoard.columns = dndOrderedColumns;
     newBoard.columnOrderIds = dndOrderedColumnsIds;
 
-    setBoard(newBoard);
+    dispatch(updateCurrentActiveBoard(newBoard));
 
     //Call API update board
     updateBoardDetailsAPI(newBoard._id, {
@@ -112,7 +123,8 @@ function Board() {
     dndOrderedCardIds,
     columnId
   ) => {
-    const newBoard = { ...board };
+    const newBoard = cloneDeep(board);
+
     const columnToUpdate = newBoard.columns.find(
       (column) => column._id === columnId
     );
@@ -120,7 +132,7 @@ function Board() {
       columnToUpdate.cards = dndOrderedCards;
       columnToUpdate.cardOrderIds = dndOrderedCardIds;
     }
-    setBoard(newBoard);
+    dispatch(updateCurrentActiveBoard(newBoard));
 
     updateColumnDetailsAPI(columnId, {
       cardOrderIds: dndOrderedCardIds,
@@ -145,7 +157,7 @@ function Board() {
     const newBoard = { ...board };
     newBoard.columns = dndOrderedColumns;
     newBoard.columnOrderIds = dndOrderedColumnIds;
-    setBoard(newBoard);
+    dispatch(updateCurrentActiveBoard(newBoard));
 
     //calling api
     let prevCardOrderIds =
@@ -172,7 +184,7 @@ function Board() {
     newBoard.columnOrderIds = newBoard.columnOrderIds.filter(
       (c) => c !== columnId
     );
-    setBoard(newBoard);
+    dispatch(updateCurrentActiveBoard(newBoard));
 
     //Calling API
     deleteColumnDetailsAPI(columnId).then((res) => {

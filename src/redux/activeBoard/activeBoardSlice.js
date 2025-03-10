@@ -4,6 +4,7 @@ import { mapOrder } from "~/utils/sorts";
 import { API_ROOT } from "~/utils/constants";
 import { generatePlaceholderCard } from "~/utils/formatters";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { cloneDeep } from "lodash";
 
 const initialState = {
   currentActiveBoard: null,
@@ -26,16 +27,16 @@ export const activeBoardSlice = createSlice({
   //Nởi xử lý dữ liệu đồng bộ
   reducers: {
     updateCurrentActiveBoard: (state, action) => {
-      let board = action.payload;
-
+        //Việc clone nông khiến cho chúng ta k thể sửa đươc những thằng cấp 2 như mảng cards vậy lên phải cloneDeep
+      let board = cloneDeep(action.payload);
       //Xử lý dữ liệu nếu cần thiết...
       board.columns = mapOrder(board?.columns, board?.columnOrderIds, "_id");
       board.columns.forEach((column) => {
-        if (isEmpty(column.cards)) {
+        if (isEmpty(column?.cards)) {
           column.cards = [generatePlaceholderCard(column)];
           column.cardOrderIds = [generatePlaceholderCard(column)._id];
         } else {
-          column.cards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
+          column.cards = mapOrder(column.cards, column.cardOrderIds, "_id");
         }
       });
 
