@@ -1,4 +1,4 @@
-import axios from 'axios'
+import authorizeAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 /**
  * Không sử dụng try-catch để call api với axios
@@ -16,7 +16,7 @@ import { API_ROOT } from '~/utils/constants'
 // };
 
 export const updateBoardDetailsAPI = async (boardId, updateData) => {
-  const response = await axios.put(
+  const response = await authorizeAxiosInstance.put(
     `${API_ROOT}/v1/boards/${boardId}`,
     updateData
   )
@@ -24,7 +24,7 @@ export const updateBoardDetailsAPI = async (boardId, updateData) => {
 }
 
 export const moveCardToDifferentColumnAPI = async updateData => {
-  const response = await axios.put(
+  const response = await authorizeAxiosInstance.put(
     `${API_ROOT}/v1/boards/supports/moving_card`,
     updateData
   )
@@ -34,7 +34,7 @@ export const moveCardToDifferentColumnAPI = async updateData => {
 /**Columns */
 
 export const updateColumnDetailsAPI = async (columnId, updateData) => {
-  const response = await axios.put(
+  const response = await authorizeAxiosInstance.put(
     `${API_ROOT}/v1/columns/${columnId}`,
     updateData
   )
@@ -42,17 +42,25 @@ export const updateColumnDetailsAPI = async (columnId, updateData) => {
 }
 
 export const deleteColumnDetailsAPI = async columnId => {
-  const response = await axios.delete(`${API_ROOT}/v1/columns/${columnId}`)
+  const response = await authorizeAxiosInstance.delete(
+    `${API_ROOT}/v1/columns/${columnId}`
+  )
   return response.data
 }
 
 export const createNewColumnAPI = async newColumnData => {
-  const response = await axios.post(`${API_ROOT}/v1/columns`, newColumnData)
+  const response = await authorizeAxiosInstance.post(
+    `${API_ROOT}/v1/columns`,
+    newColumnData
+  )
   return response.data
 }
 
 /**Cards */
 export const createNewCardAPI = async newCardData => {
-  const response = await axios.post(`${API_ROOT}/v1/cards`, newCardData)
+  const response = await authorizeAxiosInstance.post(
+    `${API_ROOT}/v1/cards`,
+    newCardData
+  )
   return response.data
 }
