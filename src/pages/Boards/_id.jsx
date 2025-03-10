@@ -30,10 +30,8 @@ function Board() {
   const { boardId } = useParams()
 
   useEffect(() => {
-    // const boardId = "67c868e67a889567f62a968d";
-    //call-api
     dispatch(fetchBoardDetailsAPI(boardId))
-  }, [dispatch])
+  }, [dispatch, boardId])
 
   //Call API xử lý khi kéo thả column xong
   //Hàm này k cần async await vì khi mà chúng ta cần hứng một kết quả thì mới cần async await
