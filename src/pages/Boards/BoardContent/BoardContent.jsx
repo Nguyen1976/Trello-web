@@ -34,12 +34,9 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 
 function BoardContent({
   board,
-  createNewColumn,
-  createNewCard,
   moveColumns,
   moveCardInTheSameColumn,
   moveCardToDifferentColumn,
-  deleteColumnDetails,
 }) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   // Require the mouse to move by 10 pixels before activating
@@ -421,9 +418,6 @@ function BoardContent({
       >
         <ListColumns
           columns={orderedColumns}
-          createNewColumn={createNewColumn}
-          createNewCard={createNewCard}
-          deleteColumnDetails={deleteColumnDetails}
         />
         {/* Overlay giữ chỗ cho card và column */}
         <DragOverlay dropAnimation={dropAnimation}>
