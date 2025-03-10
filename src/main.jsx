@@ -8,25 +8,34 @@ import { Flip, ToastContainer } from "react-toastify";
 //Cấu hình mui dialog
 import { ConfirmProvider } from "material-ui-confirm";
 
+//redux
+import { store } from "~/redux/store";
+import { Provider } from "react-redux";
+
 createRoot(document.getElementById("root")).render(
-  // <StrictMode>
-  <ModeProvider>
-    <ConfirmProvider
-      defaultOptions={{
-        allowClose: false,
-        dialogProps: { maxWidth: "xs" },
-        cancellationButtonProps: { color: "inherit" },
-        confirmationButtonProps: { color: "secondary", variant: "outlined" },
-      }}
-    >
-      <App />
-      <ToastContainer
-        theme="colored"
-        position="top-left"
-        autoClose={3000}
-        transition={Flip}
-      />
-    </ConfirmProvider>
-  </ModeProvider>
-  /* </StrictMode> */
+  //<StrictMode>
+    <Provider store={store}>
+      <ModeProvider>
+        <ConfirmProvider
+          defaultOptions={{
+            allowClose: false,
+            dialogProps: { maxWidth: "xs" },
+            cancellationButtonProps: { color: "inherit" },
+            confirmationButtonProps: {
+              color: "secondary",
+              variant: "outlined",
+            },
+          }}
+        >
+          <App />
+          <ToastContainer
+            theme="colored"
+            position="top-left"
+            autoClose={3000}
+            transition={Flip}
+          />
+        </ConfirmProvider>
+      </ModeProvider>
+    </Provider>
+  //</StrictMode>
 );
