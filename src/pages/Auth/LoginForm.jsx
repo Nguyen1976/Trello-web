@@ -1,5 +1,9 @@
 // TrungQuanDev: https://youtube.com/@trungquandev
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
+import { loginUserAPI } from '~/redux/user/userSlice'
+
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
@@ -25,6 +29,9 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { useForm } from 'react-hook-form'
 
 function LoginForm() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
@@ -37,7 +44,18 @@ function LoginForm() {
 
   const submitLogIn = data => {
     console.log('🚀 ~ LoginForm.jsx:25 ~ data:', data)
-    //calling api
+    const { email, password } = data
+    toast
+      .promise(dispatch(loginUserAPI({ email, password })), {
+        pending: 'Logging in...'
+      })
+      .then(res => {
+        console.log('🚀 ~ LoginForm.jsx:53 ~ res:', res)
+        //Kiểm tra không có lỗi thì mới redirect về route /
+        if(!res.error) {
+          navigate('/')
+        }
+      })
   }
 
   return (
