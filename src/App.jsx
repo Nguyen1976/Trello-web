@@ -8,6 +8,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { BrowserRouter } from 'react-router-dom'
 import NotFound from '~/pages/404/NotFound'
 import Auth from './pages/Auth/Auth.jsx'
+import AccountVerifycation from './pages/Auth/AccountVerifycation.jsx'
 
 function App() {
   const { isDarkMode } = useMode()
@@ -29,6 +30,11 @@ function App() {
           {/* Authentication */}
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
+
+          <Route
+            path="/account/verification"
+            element={<AccountVerifycation />}
+          />
 
           {/* 404 Not Found Page */}
           <Route path="*" element={<NotFound />} />
