@@ -7,6 +7,7 @@ import { Flip, ToastContainer } from 'react-toastify'
 
 //Cấu hình mui dialog
 import { ConfirmProvider } from 'material-ui-confirm'
+import GlobalStyles from '@mui/material/GlobalStyles'
 
 //redux
 import { store } from '~/redux/store'
@@ -38,6 +39,7 @@ createRoot(document.getElementById('root')).render(
             }
           }}
         >
+          <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
           <App />
           <ToastContainer
             theme="colored"

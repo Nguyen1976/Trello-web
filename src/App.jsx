@@ -11,10 +11,11 @@ import Auth from './pages/Auth/Auth.jsx'
 import AccountVerifycation from './pages/Auth/AccountVerifycation.jsx'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from './redux/user/userSlice.js'
+import Settings from '~/pages/Settings/Settings.jsx'
 
 const ProtectedRoute = ({ user }) => {
   if (!user) return <Navigate to="/login" replace={true} />
-  return <Outlet />//Là nó sẽ chạy vào nhưng route child được chứa bên trong nó
+  return <Outlet /> //Là nó sẽ chạy vào nhưng route child được chứa bên trong nó
 }
 
 function App() {
@@ -31,13 +32,17 @@ function App() {
           <Route
             path="/"
             element={
-              <Navigate to="/boards/67c868e67a889567f62a968d" replace={true} />
+              <Navigate to="/boards/67d28e6f2456cdf4bb244dc8" replace={true} />
             }
           />
           {/* Những Route nào yêu cầu phải đã đăng nhập rồi mới được vào thì bỏ vào đây */}
           <Route element={<ProtectedRoute user={currentUser} />}>
             {/* Board Details */}
             <Route path="/boards/:boardId" element={<Board />} />
+
+            {/* User Setting */}
+            <Route path="/settings/account" element={<Settings />} />
+            <Route path="/settings/security" element={<Settings />} />
           </Route>
 
           {/* Authentication */}

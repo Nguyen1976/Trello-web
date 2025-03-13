@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import AppsIcon from '@mui/icons-material/Apps'
@@ -41,19 +42,21 @@ function AppBar() {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <AppsIcon sx={{ color: 'white' }} />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <TrelloIcon sx={{ color: 'white' }} inheritViewBox />
-          <Typography
-            variant="span"
-            sx={{
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              color: 'white'
-            }}
-          >
-            Trello
-          </Typography>
-        </Box>
+        <Link to="/">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <TrelloIcon sx={{ color: 'white' }} inheritViewBox />
+            <Typography
+              variant="span"
+              sx={{
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                color: 'white'
+              }}
+            >
+              Trello
+            </Typography>
+          </Box>
+        </Link>
         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
           <Workspaces />
           <Recent />

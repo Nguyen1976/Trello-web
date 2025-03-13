@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { logoutUserApi, selectCurrentUser } from '~/redux/user/userSlice'
+import { logoutUserAPI, selectCurrentUser } from '~/redux/user/userSlice'
+import { Link } from 'react-router-dom'
 
 import { useConfirm } from 'material-ui-confirm'
 import Box from '@mui/material/Box'
@@ -36,7 +37,7 @@ function Profiles() {
       cancellationText: 'Cancel'
     })
       .then(() => {
-        dispatch(logoutUserApi())
+        dispatch(logoutUserAPI())
       })
       .catch(() => {})
   }
@@ -95,19 +96,21 @@ function Profiles() {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem
-          sx={{
-            '&:hover': {
-              color: 'success.light'
-            }
-          }}
-        >
-          <Avatar
-            src={currentUser?.avatar}
-            sx={{ width: 28, height: 28, mr: 2 }}
-          />{' '}
-          Profile
-        </MenuItem>
+        <Link to="/settings/account" style={{ color: 'inherit' }}>
+          <MenuItem
+            sx={{
+              '&:hover': {
+                color: 'success.light'
+              }
+            }}
+          >
+            <Avatar
+              src={currentUser?.avatar}
+              sx={{ width: 28, height: 28, mr: 2 }}
+            />{' '}
+            Profile
+          </MenuItem>
+        </Link>
         <Divider />
         <MenuItem>
           <ListItemIcon>
