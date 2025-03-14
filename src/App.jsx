@@ -33,7 +33,7 @@ function App() {
           <Route
             path="/"
             element={
-              <Navigate to="/boards/67d28e6f2456cdf4bb244dc8" replace={true} />
+              <Navigate to="/boards" replace={true} />
             }
           />
           {/* Những Route nào yêu cầu phải đã đăng nhập rồi mới được vào thì bỏ vào đây */}
