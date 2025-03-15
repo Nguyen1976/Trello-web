@@ -57,7 +57,11 @@ export const activeBoardSlice = createSlice({
           card => card._id === incomingCard._id
         )
         if (cardToUpdate) {
-          cardToUpdate.title = incomingCard.title
+          // cardToUpdate.title = incomingCard.title
+
+          Object.keys(incomingCard).forEach(key => {
+            cardToUpdate[key] = incomingCard[key]
+          })
         }
       }
 
@@ -70,6 +74,9 @@ export const activeBoardSlice = createSlice({
     builder.addCase(fetchBoardDetailsAPI.fulfilled, (state, action) => {
       //action.payload ở đây chính là response.data mà chúng ra return khi gọi api ở thằng createAsyncThunk
       const board = action.payload
+
+      //Thành viên trong board sẽ là gộp lại của 2 mảng owners và members
+      board.FE_allUsers = board.owners.concat(board.members)
 
       state.currentActiveBoard = board
     })

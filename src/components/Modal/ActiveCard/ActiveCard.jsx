@@ -41,12 +41,7 @@ import {
   updateCurrentActiveCard
 } from '~/redux/activeCard/activeCardSlice'
 import { updateCardDetailsAPI } from '~/apis'
-import {
-  selectCurrentActiveBoard,
-  updateCardInBoard,
-  updateCurrentActiveBoard
-} from '~/redux/activeBoard/activeBoardSlice'
-import { cloneDeep } from 'lodash'
+import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice'
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -85,7 +80,6 @@ function ActiveCard() {
   //Func dùng chung để update card
   const callApiUpdateCard = async updateData => {
     const updatedCard = await updateCardDetailsAPI(activeCard._id, updateData)
-    console.log('🚀 ~ ActiveCard.jsx:84 ~ updatedCard:', updatedCard)
 
     //Cập nhật card tại modal hiện tại
     dispatch(updateCurrentActiveCard(updatedCard))
@@ -101,6 +95,10 @@ function ActiveCard() {
     callApiUpdateCard({ title: newTitle.trim() })
   }
 
+  const onUpdateCardDescription = newDescription => {
+    callApiUpdateCard({ description: newDescription })
+  }
+
   const onUploadCardCover = event => {
     console.log(event.target?.files[0])
     const error = singleFileValidator(event.target?.files[0])
@@ -112,6 +110,12 @@ function ActiveCard() {
     reqData.append('cardCover', event.target?.files[0])
 
     // Gọi API...
+    toast.promise(
+      callApiUpdateCard(reqData).finally(() => (event.target.value = '')),
+      {
+        pending: 'Updating...'
+      }
+    )
   }
 
   return (
@@ -189,7 +193,7 @@ function ActiveCard() {
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {/* Left side */}
-          <Grid xs={12} sm={9}>
+          <Grid size={{ xs: 12, sm: 9 }}>
             <Box sx={{ mb: 3 }}>
               <Typography
                 sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}
@@ -213,7 +217,10 @@ function ActiveCard() {
               </Box>
 
               {/* Feature 03: Xử lý mô tả của Card */}
-              <CardDescriptionMdEditor />
+              <CardDescriptionMdEditor
+                cardDescriptionProp={activeCard?.description}
+                handleUpdateCardDescription={onUpdateCardDescription}
+              />
             </Box>
 
             <Box sx={{ mb: 3 }}>
@@ -233,7 +240,7 @@ function ActiveCard() {
           </Grid>
 
           {/* Right side */}
-          <Grid xs={12} sm={3}>
+          <Grid size={{ xs: 12, sm: 3 }}>
             <Typography
               sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}
             >
