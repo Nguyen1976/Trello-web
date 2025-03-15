@@ -16,7 +16,9 @@ const initialState = {
 export const fetchBoardDetailsAPI = createAsyncThunk(
   'activeBoard/fetchBoardDetailsAPI',
   async boardId => {
-    const response = await authorizeAxiosInstance.get(`${API_ROOT}/v1/boards/${boardId}`)
+    const response = await authorizeAxiosInstance.get(
+      `${API_ROOT}/v1/boards/${boardId}`
+    )
     return response.data
   }
 )
@@ -42,6 +44,24 @@ export const activeBoardSlice = createSlice({
 
       //Update lại dữ liệu của currentActiveBoard
       state.currentActiveBoard = board
+    },
+    updateCardInBoard: (state, action) => {
+      const incomingCard = action.payload
+
+      const columnContainCard = state.currentActiveBoard.columns.find(
+        column => column._id === incomingCard.columnId
+      )
+
+      if (columnContainCard) {
+        const cardToUpdate = columnContainCard.cards.find(
+          card => card._id === incomingCard._id
+        )
+        if (cardToUpdate) {
+          cardToUpdate.title = incomingCard.title
+        }
+      }
+
+      // Tìm dần từ board -> column -> card
     }
   },
   //extraReducers: Nơi xử lý dữ liệu bất đồng bộ
@@ -60,7 +80,8 @@ export const selectCurrentActiveBoard = state => {
   return state.activeBoard.currentActiveBoard
 }
 
-export const { updateCurrentActiveBoard } = activeBoardSlice.actions
+export const { updateCurrentActiveBoard, updateCardInBoard } =
+  activeBoardSlice.actions
 
 //Khi export ra sẽ là một thứ j đó tên là reducer
 export default activeBoardSlice.reducer
