@@ -39,6 +39,15 @@ export const fetchBoardsAPI = async searchPath => {
   return response.data
 }
 
+export const createNewBoardAPI = async data => {
+  const response = await authorizeAxiosInstance.post(
+    `${API_ROOT}/v1/boards`,
+    data
+  )
+  toast.success('Created board successfully')
+  return response.data
+}
+
 /**Columns */
 
 export const updateColumnDetailsAPI = async (columnId, updateData) => {
