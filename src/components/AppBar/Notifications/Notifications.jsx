@@ -17,8 +17,12 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   selectCurrentNotifications,
   fetchInvitationsAPI,
-  updateBoardInvitationAPI
+  updateBoardInvitationAPI,
+  addNotification
 } from '~/redux/notifications/notificationsSlice'
+import { socketIoInstance } from '~/socketClient'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import { useNavigate } from 'react-router-dom'
 
 const BOARD_INVITATION_STATUS = {
   PENDING: 'PENDING',
@@ -31,26 +35,58 @@ function Notifications() {
   const open = Boolean(anchorEl)
   const handleClickNotificationIcon = event => {
     setAnchorEl(event.currentTarget)
+    //Khi click vào phần thông báo thì set lại trạng thái của biến newNotification về false
+    setNewNotification(false)
   }
 
   const handleClose = () => {
     setAnchorEl(null)
   }
 
+  //Biến state cơ bản để kiểm tra có thông báo mới hay không
+  const [newNotification, setNewNotification] = useState(false)
+
   //Lấy giữ liệu notification từ trong redux
   const notifications = useSelector(selectCurrentNotifications)
+
+  const currentUser = useSelector(selectCurrentUser)
 
   //Fetch danh sách các lời mời invitation
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(fetchInvitationsAPI())
-  }, [dispatch])
+
+    //Tạo 1 func xử lý khi nhận được sự kiện real time, docs hướng dẫn
+    //https://socket.io/how-to/use-with-react
+
+    const onReceiveNewInvitation = invitation => {
+      //Nếu thằng user đang đăng nhập hiện tại trong redex chính là invitee trong bản ghi invitation
+      if (invitation.inviteeId === currentUser._id) {
+        //Thêm bản ghi invitation mới vào trong redux
+        dispatch(addNotification(invitation))
+        //Cập nhật trạng thái đang có thông báo đến
+        setNewNotification(true)
+      }
+    }
+    //Lắng nghe 1 sự kiện realtime từ phía server gửi về có tên là BE_USER_INVITED_TO_BOARD
+    socketIoInstance.on('BE_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
+
+    //clean up sự kiện để ngăn chặn viecj đăng ký bị lặp lại event (follow theo docs)
+    return () => {
+      socketIoInstance.off('BE_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
+    }
+  }, [dispatch, currentUser._id])
+
+  const navigate = useNavigate()
 
   //Cập nhật trạng thái của 1 lời mời tham gia board
   const updateBoardInvitation = (status, invitationId) => {
-    console.log("🚀 ~ Notifications.jsx:51 ~ invitationId, status:", invitationId, status)
-    dispatch(updateBoardInvitationAPI({ status, invitationId  })).then(res => {
-      console.log(res)
+    dispatch(updateBoardInvitationAPI({ status, invitationId })).then(res => {
+      if (
+        res.payload.boardInvitation.status === BOARD_INVITATION_STATUS.ACCEPTED
+      ) {
+        navigate(`/boards/${res.payload.boardInvitation.boardId}`)
+      }
     })
   }
 
@@ -59,8 +95,7 @@ function Notifications() {
       <Tooltip title="Notifications">
         <Badge
           color="warning"
-          // variant="none"
-          variant="dot"
+          variant={newNotification ? 'dot' : 'none'}
           sx={{ cursor: 'pointer' }}
           id="basic-button-open-notification"
           aria-controls={open ? 'basic-notification-drop-down' : undefined}
@@ -70,8 +105,7 @@ function Notifications() {
         >
           <NotificationsNoneIcon
             sx={{
-              // color: 'white'
-              color: 'yellow'
+              color: newNotification ? 'yellow' : 'white'
             }}
           />
         </Badge>
@@ -141,7 +175,7 @@ function Notifications() {
                       onClick={() =>
                         updateBoardInvitation(
                           BOARD_INVITATION_STATUS.ACCEPTED,
-                          notification._id,
+                          notification._id
                         )
                       }
                     >
@@ -156,7 +190,7 @@ function Notifications() {
                       onClick={() =>
                         updateBoardInvitation(
                           BOARD_INVITATION_STATUS.REJECTED,
-                          notification._id,
+                          notification._id
                         )
                       }
                     >

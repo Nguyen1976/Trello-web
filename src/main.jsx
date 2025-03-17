@@ -22,6 +22,8 @@ let persistor = persistStore(store)
 import { injectStore } from './utils/authorizeAxios'
 injectStore(store)
 
+
+
 createRoot(document.getElementById('root')).render(
   //<StrictMode>
 
