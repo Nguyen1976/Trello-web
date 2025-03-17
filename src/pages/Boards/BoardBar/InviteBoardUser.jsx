@@ -37,7 +37,6 @@ function InviteBoardUser({ boardId }) {
   } = useForm()
   const submitInviteUserToBoard = data => {
     const { inviteeEmail } = data
-    console.log('inviteeEmail:', inviteeEmail)
 
     //Gọi api mời một người dùng nào đó vào làm thành viên của board
     inviteUserToBoardAPI({ inviteeEmail, boardId }).then(invitation => {

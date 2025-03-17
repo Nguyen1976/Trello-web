@@ -2,8 +2,6 @@
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
-import { loginUserAPI } from '~/redux/user/userSlice'
-
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
@@ -43,14 +41,12 @@ function LoginForm() {
   const verifiedEmail = searchParams.get('verifiedEmail')
 
   const submitLogIn = data => {
-    console.log('🚀 ~ LoginForm.jsx:25 ~ data:', data)
     const { email, password } = data
     toast
       .promise(dispatch(loginUserAPI({ email, password })), {
         pending: 'Logging in...'
       })
       .then(res => {
-        console.log('🚀 ~ LoginForm.jsx:53 ~ res:', res)
         //Kiểm tra không có lỗi thì mới redirect về route /
         if(!res.error) {
           navigate('/')

@@ -8,6 +8,7 @@ import Badge from '@mui/material/Badge'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useSelector } from 'react-redux'
 import { selectCurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { CARD_MEMBER_ACTIONS } from '~/utils/constants'
 
 function CardUserGroup({ cardMemberIds = [], onUpdateCardMembers }) {
   /**
@@ -31,7 +32,15 @@ function CardUserGroup({ cardMemberIds = [], onUpdateCardMembers }) {
   )
 
   const handleUpdateCardMembers = user => {
-    console.log('🚀 ~ CardUserGroup.jsx:34 ~ user:', user)
+    //Tạo một biến incomingMemberInfo để gửi BE, với 2 thông tin chính là userId và action là xóa khoải card hoặc thêm vào card
+    const incomingMemberInfo = {
+      userId: user._id,
+      action: cardMemberIds.includes(user._id)
+        ? CARD_MEMBER_ACTIONS.REMOVE
+        : CARD_MEMBER_ACTIONS.ADD //Nếu đang là thành viên của card thì sẽ xóa còn không thì ngược lại
+    }
+
+    onUpdateCardMembers(incomingMemberInfo)
   }
 
   // Lưu ý ở đây chúng ta không dùng Component AvatarGroup của MUI bởi nó không hỗ trợ tốt trong việc chúng ta cần custom & trigger xử lý phần tử tính toán cuối, đơn giản là cứ dùng Box và CSS - Style đám Avatar cho chuẩn kết hợp tính toán một chút thôi.

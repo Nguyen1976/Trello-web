@@ -61,7 +61,6 @@ function AccountTab() {
         pending: 'Updating...'
       })
       .then(res => {
-        console.log(res)
         //Kiểm tra không có lỗi thì mới redirect về route /
         if (!res.error) {
           toast.success('User updated successfully!')
@@ -71,7 +70,6 @@ function AccountTab() {
 
   const uploadAvatar = e => {
     // Lấy file thông qua e.target?.files[0] và validate nó trước khi xử lý
-    console.log('e.target?.files[0]: ', e.target?.files[0])
     const error = singleFileValidator(e.target?.files[0])
     if (error) {
       toast.error(error)
