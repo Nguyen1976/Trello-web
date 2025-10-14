@@ -25,6 +25,7 @@ import {
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 
 import { useForm } from 'react-hook-form'
+import { loginUserAPI } from '~/redux/user/userSlice'
 
 function LoginForm() {
   const dispatch = useDispatch()
@@ -48,7 +49,7 @@ function LoginForm() {
       })
       .then(res => {
         //Kiểm tra không có lỗi thì mới redirect về route /
-        if(!res.error) {
+        if (!res.error) {
           navigate('/')
         }
       })

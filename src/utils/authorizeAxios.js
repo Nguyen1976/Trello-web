@@ -3,7 +3,6 @@ import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatters'
 import { refreshTokenAPI } from '~/apis'
 import { logoutUserAPI } from '~/redux/user/userSlice'
-import { original } from '@reduxjs/toolkit'
 
 /**
  * Không thẻ import {store} from '~/redux/store' theo cách thông thường ở đây
