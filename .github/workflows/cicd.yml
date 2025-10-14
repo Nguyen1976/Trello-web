@@ -34,4 +34,4 @@ jobs:
         run: docker pull nguyen1976/trello-web:latest
 
       - name: Run Docker Container
-        run: docker run -d -p 8017:8017 --name reactjs-app-container nguyen1976/trello-web
+        run: docker run -d -p 5173:5173 --name reactjs-app-container nguyen1976/trello-web
