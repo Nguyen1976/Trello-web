@@ -1,11 +1,11 @@
 // export const API_ROOT = 'http://localhost:8017';
 let apiRoot = ''
 if (process.env.BUILD_MODE === 'dev') {
-  apiRoot = 'http://35.175.190.143:8017'
+  apiRoot = 'http://http://3.94.162.118'
 }
 
 if (process.env.BUILD_MODE === 'production') {
-  apiRoot = 'http://35.175.190.143:8017'
+  apiRoot = 'http://http://3.94.162.118'
 }
 
 export const API_ROOT = apiRoot
