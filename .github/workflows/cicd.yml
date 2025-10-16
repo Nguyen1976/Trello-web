@@ -1,4 +1,4 @@
-name: Deploy Node Application
+name: Deploy Node App to ECR and Refresh ASG
 
 on:
   push:
@@ -6,32 +6,72 @@ on:
       - aws-production-env
 
 jobs:
-  build:
+  build_and_push_ecr:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      # 1. Cấu hình AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Build Docker Image
-        run: docker build -t nguyen1976/trello-web .
+      # 2. Đăng nhập vào ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Public Image to Docker Hub
-        run: docker push nguyen1976/trello-web:latest
-
-  deploy:
-    needs: build
-    runs-on: self-hosted
-    steps:
-      - name: Stop old container
+      # 3. Định nghĩa Image Tag (Sử dụng 'latest' để khớp với User Data)
+      - name: Set ECR Image URI
+        id: set_uri
         run: |
-          docker stop reactjs-app-container || true
-          docker rm reactjs-app-container || true
-      - name: Pull image from docker hub
-        run: docker pull nguyen1976/trello-web:latest
+          # Dùng 'latest' tag để User Data Script của bạn dễ dàng pull image mới nhất
+          ECR_URI=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          echo "ECR_URI=$ECR_URI" >> $GITHUB_OUTPUT
 
-      - name: Run Docker Container
-        run: docker run -d -p 5173:80 --name reactjs-app-container nguyen1976/trello-web
+      # 4. Build và Tag Image
+      - name: Build Docker Image
+        # Đảm bảo lệnh build này là cho ứng dụng Node của bạn
+        run: docker build -t ${{ secrets.ECR_REPOSITORY_NAME }}:latest .
+
+      # 5. Tag và Push Image lên ECR
+      - name: Tag and Push Image to ECR
+        run: |
+          docker tag ${{ secrets.ECR_REPOSITORY_NAME }}:latest ${{ steps.set_uri.outputs.ECR_URI }}
+          docker push ${{ steps.set_uri.outputs.ECR_URI }}
+
+      # 6. Truyền thông tin ECR URI cho Job Deploy
+      - name: Set Image URI Output
+        id: image_uri_output
+        run: echo "IMAGE_URI=${{ steps.set_uri.outputs.ECR_URI }}" >> $GITHUB_OUTPUT
+
+    outputs:
+      image_uri: ${{ steps.image_uri_output.outputs.IMAGE_URI }}
+
+  # 7. Kích hoạt Instance Refresh
+  deploy_asg:
+    needs: build_and_push_ecr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Trigger ASG Instance Refresh
+        run: |
+          echo "Image mới đã được push lên: ${{ needs.build_and_push_ecr.outputs.image_uri }}"
+          echo "Bắt đầu Instance Refresh cho ASG: ${{ secrets.ASG_NAME }}..."
+
+          # Lệnh này sẽ yêu cầu ASG thay thế các instance cũ bằng instance mới
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name ${{ secrets.ASG_NAME }} \
+            --preferences '{"MinHealthyPercentage": 90}'
+
+          echo "✅ Instance Refresh đã bắt đầu. Các instance mới sẽ tự động khởi động, pull image mới nhất từ ECR và chạy ứng dụng."
