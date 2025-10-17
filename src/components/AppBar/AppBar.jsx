@@ -53,7 +53,7 @@ function AppBar() {
                 color: 'white'
               }}
             >
-              Trello
+              Hello
             </Typography>
           </Box>
         </Link>
