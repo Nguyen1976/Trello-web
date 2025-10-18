@@ -1,4 +1,4 @@
-name: Deploy Node API to ECR (OIDC)
+name: Deploy React to ECR (OIDC)
 
 on:
   push:
@@ -16,12 +16,14 @@ jobs:
 
     permissions:
       id-token: write
-      contents: read
+      contents: write
 
     steps:
       # 1️⃣ Checkout source code
       - name: Checkout source
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       # 2️⃣ Configure AWS credentials (OIDC)
       - name: Configure AWS credentials
@@ -43,6 +45,19 @@ jobs:
           VERSION=$(cat version.txt | tr -d '\n')
           echo "Version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+        # 5️⃣ Tạo và push Git tag tương ứng
+      - name: Create and push Git tag
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Xóa tag local nếu trùng
+          git tag -d $VERSION 2>/dev/null || true
+          git tag $VERSION
+          git push origin $VERSION
+          echo "✅ Created and pushed Git tag: $VERSION"
 
       # 5️⃣ Build Docker image
       - name: Build Docker image
