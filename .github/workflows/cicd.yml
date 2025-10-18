@@ -1,77 +1,63 @@
-name: Deploy Node App to ECR and Refresh ASG
+name: Deploy Node API to ECR (OIDC)
 
 on:
   push:
     branches:
       - aws-production-env
 
+env:
+  AWS_REGION: us-east-1
+  AWS_IAM_ROLE: arn:aws:iam::904233122127:role/github-actions-deployer
+  ECR_REPOSITORY_NAME_NODE: nguyen1976/trello-react
+
 jobs:
   build_and_push_ecr:
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
-      - name: Checkout Source
-        uses: actions/checkout@v4
+      # 1️⃣ Checkout source code
+      - name: Checkout source
+        uses: actions/checkout@v5
 
-      # 1. Cấu hình AWS Credentials
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      # 2️⃣ Configure AWS credentials (OIDC)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_IAM_ROLE }}
+          audience: sts.amazonaws.com
 
-      # 2. Đăng nhập vào ECR
+      # 3️⃣ Login to ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 3. Định nghĩa Image Tag (Sử dụng 'latest' để khớp với User Data)
-      - name: Set ECR Image URI
-        id: set_uri
+      # 4️⃣ Lấy version từ version.txt
+      - name: Read version from file
+        id: version
         run: |
-          # Dùng 'latest' tag để User Data Script của bạn dễ dàng pull image mới nhất
-          ECR_URI=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-          echo "ECR_URI=$ECR_URI" >> $GITHUB_OUTPUT
+          VERSION=$(cat version.txt | tr -d '\n')
+          echo "Version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      # 4. Build và Tag Image
-      - name: Build Docker Image
-        # Đảm bảo lệnh build này là cho ứng dụng Node của bạn
-        run: docker build -t ${{ secrets.ECR_REPOSITORY_NAME }}:latest .
-
-      # 5. Tag và Push Image lên ECR
-      - name: Tag and Push Image to ECR
+      # 5️⃣ Build Docker image
+      - name: Build Docker image
+        env:
+          IMAGE_TAG: ${{ steps.version.outputs.version }}
         run: |
-          docker tag ${{ secrets.ECR_REPOSITORY_NAME }}:latest ${{ steps.set_uri.outputs.ECR_URI }}
-          docker push ${{ steps.set_uri.outputs.ECR_URI }}
+          docker build -t ${{ env.ECR_REPOSITORY_NAME_NODE }}:$IMAGE_TAG .
 
-      # 6. Truyền thông tin ECR URI cho Job Deploy
-      - name: Set Image URI Output
-        id: image_uri_output
-        run: echo "IMAGE_URI=${{ steps.set_uri.outputs.ECR_URI }}" >> $GITHUB_OUTPUT
-
-    outputs:
-      image_uri: ${{ steps.image_uri_output.outputs.IMAGE_URI }}
-
-  # 7. Kích hoạt Instance Refresh
-  deploy_asg:
-    needs: build_and_push_ecr
-    runs-on: ubuntu-latest
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Trigger ASG Instance Refresh
+      # 6️⃣ Push Docker image lên ECR
+      - name: Tag and push image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.version.outputs.version }}
         run: |
-          echo "Image mới đã được push lên: ${{ needs.build_and_push_ecr.outputs.image_uri }}"
-          echo "Bắt đầu Instance Refresh cho ASG: ${{ secrets.ASG_NAME }}..."
-
-          # Lệnh này sẽ yêu cầu ASG thay thế các instance cũ bằng instance mới
-          aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name ${{ secrets.ASG_NAME }} \
-            --preferences '{"MinHealthyPercentage": 90}'
-
-          echo "✅ Instance Refresh đã bắt đầu. Các instance mới sẽ tự động khởi động, pull image mới nhất từ ECR và chạy ứng dụng."
+          IMAGE_URI=$ECR_REGISTRY/${{ env.ECR_REPOSITORY_NAME_NODE }}:$IMAGE_TAG
+          docker tag ${{ env.ECR_REPOSITORY_NAME_NODE }}:$IMAGE_TAG $IMAGE_URI
+          docker push $IMAGE_URI
+          echo "✅ Successfully pushed: $IMAGE_URI"
