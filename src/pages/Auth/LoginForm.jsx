@@ -25,6 +25,7 @@ import {
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 
 import { useForm } from 'react-hook-form'
+import { loginUserAPI } from '~/redux/user/userSlice'
 
 function LoginForm() {
   const dispatch = useDispatch()
