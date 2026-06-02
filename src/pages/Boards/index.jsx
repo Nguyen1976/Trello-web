@@ -139,7 +139,7 @@ function Boards() {
               <Grid container spacing={2}>
                 {boards.map(b => (
                   <Grid xs={2} sm={3} md={4} key={b._id}>
-                    <Card sx={{ width: '250px' }}>
+                    <Card sx={{ width: '250px' }} data-testid={`board-list-item-${b._id}`}>
                       {/* Ý tưởng mở rộng về sau làm ảnh Cover cho board nhé */}
                       {/* <CardMedia component="img" height="100" image="https://picsum.photos/100" /> */}
                       <Box
@@ -147,7 +147,7 @@ function Boards() {
                       ></Box>
 
                       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-                        <Typography gutterBottom variant="h6" component="div">
+                        <Typography gutterBottom variant="h6" component="div" data-testid="board-list-item-title">
                           {b?.title}
                         </Typography>
                         <Typography
@@ -164,6 +164,7 @@ function Boards() {
                         <Box
                           component={Link}
                           to={`/boards/${b._id}`}
+                          data-testid="board-list-item-link"
                           sx={{
                             mt: 1,
                             display: 'flex',

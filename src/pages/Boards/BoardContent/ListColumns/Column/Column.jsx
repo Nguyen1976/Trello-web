@@ -295,6 +295,7 @@ function Column({ column }) {
               <Button
                 onClick={toggleOpenNewCardForm}
                 startIcon={<AddCardIcon />}
+                data-testid="open-new-card-form"
               >
                 Add new card
               </Button>
@@ -321,6 +322,7 @@ function Column({ column }) {
                 data-no-dnd
                 value={newCardTitle}
                 onChange={e => setNewCardTitle(e.target.value)}
+                inputProps={{ 'data-testid': 'new-card-title' }}
                 sx={{
                   '& label': { color: 'text.primary' },
                   '& input': {
@@ -352,6 +354,7 @@ function Column({ column }) {
                   variant="contained"
                   color="success"
                   size="small"
+                  data-testid="submit-new-card"
                   sx={{
                     boxShadow: 'none',
                     border: '0.5px',

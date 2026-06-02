@@ -56,7 +56,7 @@ function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(submitLogIn)}>
+    <form onSubmit={handleSubmit(submitLogIn)} data-testid="login-form">
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
         <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '6em' }}>
           <Box
@@ -136,6 +136,7 @@ function LoginForm() {
                 label="Enter Email..."
                 type="text"
                 variant="outlined"
+                inputProps={{ 'data-testid': 'login-email' }}
                 error={!!errors['email']}
                 {...register('email', {
                   required: FIELD_REQUIRED_MESSAGE,
@@ -153,6 +154,7 @@ function LoginForm() {
                 label="Enter Password..."
                 type="password"
                 variant="outlined"
+                inputProps={{ 'data-testid': 'login-password' }}
                 error={!!errors['password']}
                 {...register('password', {
                   required: FIELD_REQUIRED_MESSAGE,
@@ -173,6 +175,7 @@ function LoginForm() {
               color="primary"
               size="large"
               fullWidth
+              data-testid="login-submit"
             >
               Login
             </Button>

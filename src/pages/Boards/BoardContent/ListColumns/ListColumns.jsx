@@ -84,6 +84,7 @@ function ListColumns({ columns }) {
         {!openNewColumnForm ? (
           <Box
             onClick={toggleOpenNewColumnForm}
+            data-testid="open-new-column-form"
             sx={{
               minWidth: '250px',
               maxWidth: '250px',
@@ -130,6 +131,7 @@ function ListColumns({ columns }) {
               autoFocus
               value={newColumnTitle}
               onChange={e => setNewColumnTitle(e.target.value)}
+              inputProps={{ 'data-testid': 'new-column-title' }}
               sx={{
                 '& label': { color: 'white' },
                 '& input': { color: 'white' },
@@ -155,6 +157,7 @@ function ListColumns({ columns }) {
                 variant="contained"
                 color="success"
                 size="small"
+                data-testid="submit-new-column"
                 sx={{
                   boxShadow: 'none',
                   border: '0.5px',

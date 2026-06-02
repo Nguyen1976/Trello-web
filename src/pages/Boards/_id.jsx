@@ -117,7 +117,12 @@ function Board() {
   }
 
   return (
-    <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
+    <Container
+      disableGutters
+      maxWidth={false}
+      sx={{ height: '100vh' }}
+      data-testid="board-page"
+    >
       <ActiveCard />
 
       {/* Các thành phần còn lại của board detail */}

@@ -75,7 +75,7 @@ function SidebarCreateBoardModal({ afterCreateNewBoard }) {
   // <>...</> nhắc lại cho bạn anof chưa biết hoặc quên nhé: nó là React Fragment, dùng để bọc các phần tử lại mà không cần chỉ định DOM Node cụ thể nào cả.
   return (
     <>
-      <SidebarItem onClick={handleOpenModal}>
+      <SidebarItem onClick={handleOpenModal} data-testid="open-create-board-modal">
         <LibraryAddIcon fontSize="small" />
         Create a new board
       </SidebarItem>
@@ -128,7 +128,7 @@ function SidebarCreateBoardModal({ afterCreateNewBoard }) {
             </Typography>
           </Box>
           <Box id="modal-modal-description" sx={{ my: 2 }}>
-            <form onSubmit={handleSubmit(submitCreateNewBoard)}>
+            <form onSubmit={handleSubmit(submitCreateNewBoard)} data-testid="create-board-form">
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Box>
                   <TextField
@@ -136,6 +136,7 @@ function SidebarCreateBoardModal({ afterCreateNewBoard }) {
                     label="Title"
                     type="text"
                     variant="outlined"
+                    inputProps={{ 'data-testid': 'create-board-title' }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -166,6 +167,7 @@ function SidebarCreateBoardModal({ afterCreateNewBoard }) {
                     type="text"
                     variant="outlined"
                     multiline
+                    inputProps={{ 'data-testid': 'create-board-description' }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -227,6 +229,7 @@ function SidebarCreateBoardModal({ afterCreateNewBoard }) {
                     type="submit"
                     variant="contained"
                     color="primary"
+                    data-testid="create-board-submit"
                   >
                     Create
                   </Button>
