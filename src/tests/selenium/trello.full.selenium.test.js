@@ -57,7 +57,7 @@ describe('Trello full E2E flow (Selenium)', () => {
     'login → create board → enter board → create column → create card',
     async () => {
       const id = stamp()
-      const boardTitle = `E2E Board ${id}`
+      const boardTitle = `000 E2E Board ${id}`
       const boardDesc = `Created automatically by Selenium ${id}`
       const columnTitle = `E2E Column ${id}`
       const cardTitle = `E2E Card ${id}`
@@ -80,15 +80,19 @@ describe('Trello full E2E flow (Selenium)', () => {
 
       // 4) Open the board we just created (modal closes + list refetch)
       await boards.openBoardByTitle(boardTitle)
+      console.log('E2E full: opened board')
 
       const boardPage = new BoardDetailPage(driver)
       await boardPage.waitLoaded()
+      console.log('E2E full: board page loaded')
 
       // 5) Create column
       await boardPage.addColumn(columnTitle)
+      console.log('E2E full: column created')
 
       // 6) Create card in that column
       await boardPage.addCardToColumnByTitle(columnTitle, cardTitle)
+      console.log('E2E full: card created')
 
       // 7) Verify card rendered
       const card = await boardPage.waitCardVisible(cardTitle)

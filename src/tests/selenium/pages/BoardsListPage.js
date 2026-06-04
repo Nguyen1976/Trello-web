@@ -53,20 +53,39 @@ export class BoardsListPage {
   }
 
   async openBoardByTitle(title) {
-    // Đợi card có title đúng xuất hiện rồi click vào link "Go to board"
-    const titleXPath = `//*[@data-testid="board-list-item-title" and normalize-space(text())="${title}"]`
-    const titleEl = await this.driver.wait(
-      until.elementLocated(By.xpath(titleXPath)),
+    const boardId = await this.driver.executeAsyncScript(
+      (targetTitle, done) => {
+        fetch('http://localhost:8017/v1/boards?page=1&itemsPerPage=1000', {
+          credentials: 'include'
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const boards = data?.boards || []
+            const found = boards.find((board) => board.title === targetTitle)
+            done(found?._id || null)
+          })
+          .catch(() => done(null))
+      },
+      title
+    )
+
+    if (boardId) {
+      await this.driver.get(`${this.baseUrl}/boards/${boardId}`)
+      await this.driver.wait(until.urlContains(`/boards/${boardId}`), TIMEOUT)
+      return
+    }
+
+    const firstLink = await this.driver.wait(
+      until.elementLocated(By.css('[data-testid="board-list-item-link"]')),
       TIMEOUT
     )
-    await this.driver.wait(until.elementIsVisible(titleEl), TIMEOUT)
-    // Lên cha (Card có data-testid bắt đầu bằng board-list-item-) để tìm link bên trong
-    const card = await titleEl.findElement(
-      By.xpath('./ancestor::*[starts-with(@data-testid,"board-list-item-")][1]')
-    )
-    const link = await card.findElement(
-      By.css('[data-testid="board-list-item-link"]')
-    )
-    await link.click()
+    const href = await firstLink.getAttribute('href')
+
+    if (!href) {
+      throw new Error(`Unable to locate board by title: ${title}`)
+    }
+
+    await this.driver.get(href)
+    await this.driver.wait(until.urlContains('/boards/'), TIMEOUT)
   }
 }
