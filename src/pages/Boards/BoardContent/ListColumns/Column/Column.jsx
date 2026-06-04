@@ -160,7 +160,13 @@ function Column({ column }) {
   }
 
   return (
-    <div ref={setNodeRef} style={dndKitColumnStyles} {...attributes}>
+    <div
+      ref={setNodeRef}
+      style={dndKitColumnStyles}
+      {...attributes}
+      data-testid="column"
+      data-column-id={column?._id}
+    >
       <Box
         {...listeners}
         sx={{
@@ -189,11 +195,13 @@ function Column({ column }) {
             data-no-dnd="true"
             value={column?.title}
             onChangedValue={onUpdateColumnTitle}
+            inputProps={{ 'data-testid': 'column-title-input' }}
           />
           <Box>
             <Tooltip title="more option">
               <ExpandMoreIcon
                 id="basic-column-dropdown"
+                data-testid="column-dropdown"
                 aria-controls={open ? 'basic-menu-column-dropdown' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
@@ -248,6 +256,7 @@ function Column({ column }) {
               <Divider />
               <MenuItem
                 onClick={handleDeleteColumn}
+                data-testid="delete-column"
                 sx={{
                   '&:hover': {
                     color: 'warning.dark',
@@ -300,7 +309,10 @@ function Column({ column }) {
                 Add new card
               </Button>
               <Tooltip title="Drag to move">
-                <DragHandleIcon sx={{ cursor: 'pointer' }} />
+                <DragHandleIcon
+                  data-testid="column-drag-handle"
+                  sx={{ cursor: 'pointer' }}
+                />
               </Tooltip>
             </Box>
           ) : (

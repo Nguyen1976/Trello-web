@@ -1,6 +1,13 @@
 import { By, until } from 'selenium-webdriver'
+import {
+  clickByTestId,
+  confirmDialog,
+  fillReactInputByTestId,
+  waitForAxiosIdle
+} from '../helpers/seleniumHelpers.js'
 
 const TIMEOUT = 20000
+const API_ROOT = 'http://localhost:8017'
 
 export class BoardsListPage {
   constructor(driver, baseUrl) {
@@ -18,12 +25,7 @@ export class BoardsListPage {
   }
 
   async openCreateBoardModal() {
-    const trigger = await this.driver.wait(
-      until.elementLocated(By.css('[data-testid="open-create-board-modal"]')),
-      TIMEOUT
-    )
-    await this.driver.wait(until.elementIsVisible(trigger), TIMEOUT)
-    await trigger.click()
+    await clickByTestId(this.driver, 'open-create-board-modal', TIMEOUT)
     await this.driver.wait(
       until.elementLocated(By.css('[data-testid="create-board-form"]')),
       TIMEOUT
@@ -33,59 +35,121 @@ export class BoardsListPage {
   }
 
   async fillAndSubmitCreateBoard({ title, description }) {
-    const titleEl = await this.driver.wait(
-      until.elementLocated(By.css('[data-testid="create-board-title"]')),
+    // Form dùng react-hook-form (register) → set value + dispatch input/change
+    await fillReactInputByTestId(this.driver, 'create-board-title', title, TIMEOUT)
+    await fillReactInputByTestId(
+      this.driver,
+      'create-board-description',
+      description,
       TIMEOUT
     )
-    await this.driver.wait(until.elementIsVisible(titleEl), TIMEOUT)
-    await titleEl.sendKeys(title)
+    await waitForAxiosIdle(this.driver, TIMEOUT)
+    await clickByTestId(this.driver, 'create-board-submit', TIMEOUT)
 
-    const descEl = await this.driver.findElement(
-      By.css('[data-testid="create-board-description"]')
+    // Chờ modal đóng (form biến mất) — xác nhận create thành công
+    await this.driver.wait(
+      async () => {
+        const open = await this.driver.executeScript(
+          () => document.querySelectorAll('[data-testid="create-board-form"]').length
+        )
+        return open === 0
+      },
+      TIMEOUT,
+      'Create board form did not close (create likely failed)'
     )
-    await descEl.sendKeys(description)
-
-    const submit = await this.driver.findElement(
-      By.css('[data-testid="create-board-submit"]')
-    )
-    await this.driver.wait(until.elementIsEnabled(submit), TIMEOUT)
-    await submit.click()
+    await waitForAxiosIdle(this.driver, TIMEOUT)
   }
 
-  async openBoardByTitle(title) {
-    const boardId = await this.driver.executeAsyncScript(
-      (targetTitle, done) => {
-        fetch('http://localhost:8017/v1/boards?page=1&itemsPerPage=1000', {
-          credentials: 'include'
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            const boards = data?.boards || []
-            const found = boards.find((board) => board.title === targetTitle)
-            done(found?._id || null)
-          })
-          .catch(() => done(null))
+  /** Tìm boardId theo title qua API (poll vì DB có thể trễ) */
+  async findBoardIdByTitle(title) {
+    let boardId = null
+    await this.driver.wait(
+      async () => {
+        boardId = await this.driver.executeAsyncScript(
+          (root, targetTitle, done) => {
+            fetch(`${root}/v1/boards?page=1&itemsPerPage=1000`, {
+              credentials: 'include'
+            })
+              .then(response => response.json())
+              .then(data => {
+                const list = data?.boards || []
+                const found = list.find(b => b.title === targetTitle)
+                done(found?._id || null)
+              })
+              .catch(() => done(null))
+          },
+          API_ROOT,
+          title
+        )
+        return Boolean(boardId)
       },
-      title
+      TIMEOUT,
+      `Board "${title}" not found via API`
     )
+    return boardId
+  }
 
-    if (boardId) {
-      await this.driver.get(`${this.baseUrl}/boards/${boardId}`)
-      await this.driver.wait(until.urlContains(`/boards/${boardId}`), TIMEOUT)
-      return
-    }
+  /**
+   * Mở đúng board theo title (không fallback sang board khác để tránh dùng nhầm
+   * board cũ). Trả về boardId.
+   */
+  async openBoardByTitle(title) {
+    const boardId = await this.findBoardIdByTitle(title)
+    await this.driver.get(`${this.baseUrl}/boards/${boardId}`)
+    await this.driver.wait(until.urlContains(`/boards/${boardId}`), TIMEOUT)
+    return boardId
+  }
 
-    const firstLink = await this.driver.wait(
-      until.elementLocated(By.css('[data-testid="board-list-item-link"]')),
-      TIMEOUT
+  /** Thoát khỏi board, quay lại danh sách boards */
+  async goToBoardsList() {
+    await this.driver.get(`${this.baseUrl}/boards`)
+    await this.waitLoaded()
+  }
+
+  /**
+   * Xóa board (soft-delete) qua API: app hiện chưa có nút xóa board trên UI,
+   * backend hỗ trợ _destroy nên dùng PUT để board biến mất khỏi danh sách.
+   */
+  async softDeleteBoard(boardId) {
+    const ok = await this.driver.executeAsyncScript(
+      (root, id, done) => {
+        fetch(`${root}/v1/boards/${id}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ _destroy: true })
+        })
+          .then((r) => done(r.ok))
+          .catch(() => done(false))
+      },
+      API_ROOT,
+      boardId
     )
-    const href = await firstLink.getAttribute('href')
+    if (!ok) throw new Error(`Unable to delete board: ${boardId}`)
+  }
 
-    if (!href) {
-      throw new Error(`Unable to locate board by title: ${title}`)
-    }
+  /** Chờ board biến mất khỏi danh sách (reload trang list) */
+  async waitBoardAbsentById(boardId) {
+    await this.driver.get(`${this.baseUrl}/boards`)
+    await this.waitLoaded()
+    await this.driver.wait(
+      async () => {
+        const present = await this.driver.executeScript(
+          id => document.querySelectorAll(`[data-testid="board-list-item-${id}"]`).length,
+          boardId
+        )
+        return present === 0
+      },
+      TIMEOUT,
+      `Board ${boardId} still present in list`
+    )
+  }
 
-    await this.driver.get(href)
-    await this.driver.wait(until.urlContains('/boards/'), TIMEOUT)
+  /** Đăng xuất qua menu Profile */
+  async logout() {
+    await clickByTestId(this.driver, 'profile-button', TIMEOUT)
+    await clickByTestId(this.driver, 'logout-menuitem', TIMEOUT)
+    await confirmDialog(this.driver, 'Confirm', TIMEOUT)
+    await this.driver.wait(until.urlContains('/login'), TIMEOUT)
   }
 }

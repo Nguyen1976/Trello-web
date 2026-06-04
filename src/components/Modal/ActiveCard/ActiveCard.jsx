@@ -139,6 +139,7 @@ function ActiveCard() {
       sx={{ overflowY: 'auto' }}
     >
       <Box
+        data-testid="active-card-modal"
         sx={{
           position: 'relative',
           width: 900,
@@ -164,6 +165,7 @@ function ActiveCard() {
         >
           <CancelIcon
             color="error"
+            data-testid="active-card-close"
             sx={{ '&:hover': { color: 'error.light' } }}
             onClick={handleCloseModal}
           />
@@ -201,6 +203,7 @@ function ActiveCard() {
             inputFontSize="22px"
             value={activeCard?.title}
             onChangedValue={onUpdateCardTitle}
+            inputProps={{ 'data-testid': 'active-card-title-input' }}
           />
         </Box>
 

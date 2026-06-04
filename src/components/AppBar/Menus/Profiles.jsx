@@ -48,6 +48,7 @@ function Profiles() {
         <IconButton
           onClick={handleClick}
           size="small"
+          data-testid="profile-button"
           aria-controls={open ? 'account-menu' : undefined}
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
@@ -125,6 +126,7 @@ function Profiles() {
           Settings
         </MenuItem>
         <MenuItem
+          data-testid="logout-menuitem"
           sx={{
             '&:hover': {
               color: 'warning.dark'
