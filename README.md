@@ -2,7 +2,7 @@
 
 ## Kiểm thử
 
-Tài liệu: [../docs/TEST_PLAN.md](../docs/TEST_PLAN.md) · Test cases: [../docs/TEST_CASES.md](../docs/TEST_CASES.md)
+Tài liệu: [../docs/TEST_PLAN.md](../docs/TEST_PLAN.md) · Test cases: [../docs/TEST_CASES.md](../docs/TEST_CASES.md) · [Kỹ thuật kiểm thử](./docs/TESTING_TECHNIQUES_SUMMARY.md)
 
 ### Scripts
 
