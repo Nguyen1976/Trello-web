@@ -90,9 +90,7 @@ describe('Trello Selenium E2E - UI pages coverage (khóa 4)', () => {
       await login.login(TEST_EMAIL, TEST_PASSWORD)
       await driver.wait(until.urlContains('/boards'), 20000)
       await driver.wait(
-        until.elementLocated(
-          By.css('[data-testid="open-create-board-modal"]')
-        ),
+        until.elementLocated(By.css('[data-testid="open-create-board-modal"]')),
         20000
       )
     }
@@ -140,7 +138,9 @@ describe('Trello Selenium E2E - UI pages coverage (khóa 4)', () => {
     // Form đăng ký có 2 field password (mật khẩu + xác nhận), khác form login
     await driver.wait(
       async () => {
-        const fields = await driver.findElements(By.css('input[type="password"]'))
+        const fields = await driver.findElements(
+          By.css('input[type="password"]')
+        )
         if (fields.length < 2) return false
         const visible = await Promise.all(
           fields.map(f => f.isDisplayed().catch(() => false))
@@ -167,34 +167,43 @@ describe('Trello Selenium E2E - UI pages coverage (khóa 4)', () => {
   })
 
   // TC-E2E-05: Route protected /boards khi chưa đăng nhập → redirect về /login
-  maybeIt('protected /boards redirects to /login when not authenticated', async () => {
-    await clearSession()
-    await driver.get(`${BASE_URL}/boards`)
-    await driver.wait(until.urlContains('/login'), 15000)
-    const form = await driver.wait(
-      until.elementLocated(By.css('[data-testid="login-form"]')),
-      15000
-    )
-    expect(await form.isDisplayed()).toBe(true)
-  })
+  maybeIt(
+    'protected /boards redirects to /login when not authenticated',
+    async () => {
+      await clearSession()
+      await driver.get(`${BASE_URL}/boards`)
+      await driver.wait(until.urlContains('/login'), 15000)
+      const form = await driver.wait(
+        until.elementLocated(By.css('[data-testid="login-form"]')),
+        15000
+      )
+      expect(await form.isDisplayed()).toBe(true)
+    }
+  )
 
   // TC-E2E-06: Route protected /settings/account khi chưa đăng nhập → redirect về /login
-  maybeIt('protected /settings/account redirects to /login when not authenticated', async () => {
-    await clearSession()
-    await driver.get(`${BASE_URL}/settings/account`)
-    await driver.wait(until.urlContains('/login'), 15000)
-    expect(await driver.getCurrentUrl()).toMatch(/\/login/)
-  })
+  maybeIt(
+    'protected /settings/account redirects to /login when not authenticated',
+    async () => {
+      await clearSession()
+      await driver.get(`${BASE_URL}/settings/account`)
+      await driver.wait(until.urlContains('/login'), 15000)
+      expect(await driver.getCurrentUrl()).toMatch(/\/login/)
+    }
+  )
 
   // TC-E2E-07: /account/verification thiếu params hợp lệ → điều hướng sang trang 404
-  maybeIt('account verification with invalid params redirects to 404', async () => {
-    await driver.get(`${BASE_URL}/account/verification`)
-    const goHome = await driver.wait(
-      until.elementLocated(By.xpath('//*[normalize-space()="Go Home"]')),
-      15000
-    )
-    expect(await goHome.isDisplayed()).toBe(true)
-  })
+  maybeIt(
+    'account verification with invalid params redirects to 404',
+    async () => {
+      await driver.get(`${BASE_URL}/account/verification`)
+      const goHome = await driver.wait(
+        until.elementLocated(By.xpath('//*[normalize-space()="Go Home"]')),
+        15000
+      )
+      expect(await goHome.isDisplayed()).toBe(true)
+    }
+  )
 
   // ===================================================================
   // Nhóm 2: Các trang yêu cầu ĐÃ đăng nhập
