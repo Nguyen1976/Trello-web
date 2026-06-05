@@ -36,7 +36,12 @@ export class BoardsListPage {
 
   async fillAndSubmitCreateBoard({ title, description }) {
     // Form dùng react-hook-form (register) → set value + dispatch input/change
-    await fillReactInputByTestId(this.driver, 'create-board-title', title, TIMEOUT)
+    await fillReactInputByTestId(
+      this.driver,
+      'create-board-title',
+      title,
+      TIMEOUT
+    )
     await fillReactInputByTestId(
       this.driver,
       'create-board-description',
@@ -50,7 +55,9 @@ export class BoardsListPage {
     await this.driver.wait(
       async () => {
         const open = await this.driver.executeScript(
-          () => document.querySelectorAll('[data-testid="create-board-form"]').length
+          () =>
+            document.querySelectorAll('[data-testid="create-board-form"]')
+              .length
         )
         return open === 0
       },
@@ -119,7 +126,7 @@ export class BoardsListPage {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ _destroy: true })
         })
-          .then((r) => done(r.ok))
+          .then(r => done(r.ok))
           .catch(() => done(false))
       },
       API_ROOT,
@@ -135,7 +142,9 @@ export class BoardsListPage {
     await this.driver.wait(
       async () => {
         const present = await this.driver.executeScript(
-          id => document.querySelectorAll(`[data-testid="board-list-item-${id}"]`).length,
+          id =>
+            document.querySelectorAll(`[data-testid="board-list-item-${id}"]`)
+              .length,
           boardId
         )
         return present === 0

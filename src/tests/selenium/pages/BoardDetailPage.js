@@ -34,27 +34,28 @@ export class BoardDetailPage {
   /** Trả về thứ tự title các column từ trái sang phải (theo DOM) */
   async getColumnTitlesInOrder() {
     return this.driver.executeScript(() =>
-      Array.from(document.querySelectorAll('[data-testid="column"]')).map(col => {
-        const input = col.querySelector('[data-testid="column-title-input"]')
-        return input ? (input.value || '').trim() : ''
-      })
+      Array.from(document.querySelectorAll('[data-testid="column"]')).map(
+        col => {
+          const input = col.querySelector('[data-testid="column-title-input"]')
+          return input ? (input.value || '').trim() : ''
+        }
+      )
     )
   }
 
   /** WebElement của column theo title (hoặc null) */
   async getColumnElementByTitle(title) {
-    return this.driver.executeScript(
-      t => {
-        const cols = Array.from(document.querySelectorAll('[data-testid="column"]'))
-        return (
-          cols.find(col => {
-            const input = col.querySelector('[data-testid="column-title-input"]')
-            return input && (input.value || '').trim() === t.trim()
-          }) || null
-        )
-      },
-      title
-    )
+    return this.driver.executeScript(t => {
+      const cols = Array.from(
+        document.querySelectorAll('[data-testid="column"]')
+      )
+      return (
+        cols.find(col => {
+          const input = col.querySelector('[data-testid="column-title-input"]')
+          return input && (input.value || '').trim() === t.trim()
+        }) || null
+      )
+    }, title)
   }
 
   async waitColumnByTitle(title) {
@@ -79,13 +80,17 @@ export class BoardDetailPage {
   async isCardInColumn(cardTitle, columnTitle) {
     return this.driver.executeScript(
       (cTitle, colTitle) => {
-        const cols = Array.from(document.querySelectorAll('[data-testid="column"]'))
+        const cols = Array.from(
+          document.querySelectorAll('[data-testid="column"]')
+        )
         const col = cols.find(c => {
           const input = c.querySelector('[data-testid="column-title-input"]')
           return input && (input.value || '').trim() === colTitle.trim()
         })
         if (!col) return false
-        const cards = Array.from(col.querySelectorAll('[data-testid="card-item"]'))
+        const cards = Array.from(
+          col.querySelectorAll('[data-testid="card-item"]')
+        )
         return cards.some(card => (card.textContent || '').includes(cTitle))
       },
       cardTitle,
@@ -100,7 +105,9 @@ export class BoardDetailPage {
     const before = await this.getColumnCount()
 
     const opened = await this.driver.executeScript(() => {
-      const opener = document.querySelector('[data-testid="open-new-column-form"]')
+      const opener = document.querySelector(
+        '[data-testid="open-new-column-form"]'
+      )
       if (!opener) return false
       opener.click()
       return true
@@ -111,7 +118,12 @@ export class BoardDetailPage {
       until.elementLocated(By.css('[data-testid="submit-new-column"]')),
       TIMEOUT
     )
-    await fillReactInputByTestId(this.driver, 'new-column-title', title, TIMEOUT)
+    await fillReactInputByTestId(
+      this.driver,
+      'new-column-title',
+      title,
+      TIMEOUT
+    )
     await waitForAxiosIdle(this.driver, TIMEOUT)
     await clickByTestId(this.driver, 'submit-new-column', TIMEOUT)
 
@@ -148,7 +160,12 @@ export class BoardDetailPage {
       until.elementLocated(By.css('[data-testid="new-card-title"]')),
       TIMEOUT
     )
-    await fillReactInputByTestId(this.driver, 'new-card-title', cardTitle, TIMEOUT)
+    await fillReactInputByTestId(
+      this.driver,
+      'new-card-title',
+      cardTitle,
+      TIMEOUT
+    )
     await waitForAxiosIdle(this.driver, TIMEOUT)
     await clickByTestId(this.driver, 'submit-new-card', TIMEOUT)
     await this.getCardElement(cardTitle)
@@ -212,7 +229,8 @@ export class BoardDetailPage {
             document.querySelectorAll('[data-testid="card-item"]')
           )
           const card = cards.find(
-            c => (c.textContent || '').includes(title) && c.offsetParent !== null
+            c =>
+              (c.textContent || '').includes(title) && c.offsetParent !== null
           )
           if (!card) return false
           card.dispatchEvent(
@@ -247,7 +265,9 @@ export class BoardDetailPage {
     await this.driver.wait(
       async () => {
         const open = await this.driver.executeScript(
-          () => document.querySelectorAll('[data-testid="active-card-modal"]').length
+          () =>
+            document.querySelectorAll('[data-testid="active-card-modal"]')
+              .length
         )
         return open === 0
       },
