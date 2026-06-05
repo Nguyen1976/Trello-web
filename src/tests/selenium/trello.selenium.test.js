@@ -128,16 +128,28 @@ describe('Trello Selenium E2E - UI pages coverage (khóa 4)', () => {
     await clearSession()
     await driver.get(`${BASE_URL}/register`)
     await driver.wait(until.urlContains('/register'), 15000)
+    // RegisterForm dùng MUI Zoom transitionDelay 200ms — chờ animation xong
+    await driver.sleep(400)
     const registerBtn = await driver.wait(
-      until.elementLocated(By.xpath('//button[normalize-space()="Register"]')),
+      until.elementLocated(
+        By.xpath('//button[@type="submit" and normalize-space()="Register"]')
+      ),
       15000
     )
-    expect(await registerBtn.isDisplayed()).toBe(true)
-    // Form đăng ký có field xác nhận mật khẩu (phân biệt với form login)
-    const confirmField = await driver.findElement(
-      By.xpath('//input[@type="password"]')
+    await driver.wait(until.elementIsVisible(registerBtn), 15000)
+    // Form đăng ký có 2 field password (mật khẩu + xác nhận), khác form login
+    await driver.wait(
+      async () => {
+        const fields = await driver.findElements(By.css('input[type="password"]'))
+        if (fields.length < 2) return false
+        const visible = await Promise.all(
+          fields.map(f => f.isDisplayed().catch(() => false))
+        )
+        return visible.filter(Boolean).length >= 2
+      },
+      15000,
+      'Register form should show password and confirmation fields'
     )
-    expect(await confirmField.isDisplayed()).toBe(true)
   })
 
   // TC-E2E-04: Route không tồn tại → hiển thị trang 404 Not Found
