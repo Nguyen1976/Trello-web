@@ -34,13 +34,16 @@ export const logoutUserAPI = createAsyncThunk(
   }
 )
 
-export const updateUserAPI = createAsyncThunk('user/updateUserAPI', async data => {
-  const response = await authorizeAxiosInstance.put(
-    `${API_ROOT}/v1/users/update`,
-    data
-  )
-  return response.data
-})
+export const updateUserAPI = createAsyncThunk(
+  'user/updateUserAPI',
+  async data => {
+    const response = await authorizeAxiosInstance.put(
+      `${API_ROOT}/v1/users/update`,
+      data
+    )
+    return response.data
+  }
+)
 
 export const userSlice = createSlice({
   name: 'user',
@@ -64,7 +67,5 @@ export const userSlice = createSlice({
 export const selectCurrentUser = state => {
   return state.user.currentUser
 }
-
-export const {} = userSlice.actions
 
 export default userSlice.reducer

@@ -3,8 +3,6 @@ import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatters'
 import { refreshTokenAPI } from '~/apis'
 import { logoutUserAPI } from '~/redux/user/userSlice'
-import { original } from '@reduxjs/toolkit'
-
 /**
  * Không thẻ import {store} from '~/redux/store' theo cách thông thường ở đây
  * Giải pháp InJect store là kỹ thuật khi cần sử dụng biến redux store từ file ngoài phạm vi component
@@ -86,7 +84,7 @@ authorizeAxiosInstance.interceptors.response.use(
           })
       }
 
-      return refreshTokenPromise.then(accessToken => {
+      return refreshTokenPromise.then(() => {
         //Trường hợp cần lưu accessToken vào local thì xử lý thêm ở đây
 
         //Bước này để gọi lại các api bị lỗi ban đầu đã được lưu vào originalRequests

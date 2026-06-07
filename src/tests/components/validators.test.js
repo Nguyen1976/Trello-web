@@ -1,7 +1,4 @@
-import {
-  singleFileValidator,
-  LIMIT_COMMON_FILE_SIZE
-} from '~/utils/validators'
+import { singleFileValidator, LIMIT_COMMON_FILE_SIZE } from '~/utils/validators'
 
 // TC-RTL-VALID-01 - Black-box equivalence partitioning + BVA cho singleFileValidator
 describe('singleFileValidator', () => {
@@ -29,9 +26,7 @@ describe('singleFileValidator', () => {
 
   it('returns size-error when file exceeds 10MB (boundary +1)', () => {
     const file = buildFile({ size: LIMIT_COMMON_FILE_SIZE + 1 })
-    expect(singleFileValidator(file)).toBe(
-      'Maximum file size exceeded. (10MB)'
-    )
+    expect(singleFileValidator(file)).toBe('Maximum file size exceeded. (10MB)')
   })
 
   it('accepts files exactly at the 10MB boundary', () => {

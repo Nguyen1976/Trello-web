@@ -35,7 +35,12 @@ export async function setReactInputValue(driver, el, value) {
 }
 
 /** Gõ vào MUI/React controlled input qua data-testid */
-export async function fillReactInputByTestId(driver, testId, value, timeout = 20000) {
+export async function fillReactInputByTestId(
+  driver,
+  testId,
+  value,
+  timeout = 20000
+) {
   const el = await driver.wait(
     until.elementLocated(By.css(`[data-testid="${testId}"]`)),
     timeout
@@ -70,7 +75,11 @@ export async function clickByTestId(driver, testId, timeout = 20000) {
         const el = document.querySelector(`[data-testid="${id}"]`)
         if (!el) return false
         el.dispatchEvent(
-          new MouseEvent('click', { bubbles: true, cancelable: true, view: window })
+          new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          })
         )
         return true
       }, testId),

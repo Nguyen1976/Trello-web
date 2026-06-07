@@ -45,14 +45,15 @@ export const notificationsSlice = createSlice({
     }
   },
   extraReducers: builder => {
-    builder.addCase(fetchInvitationsAPI.fulfilled, (state, action) => {
-      let incomingInvitations = action.payload
+    builder
+      .addCase(fetchInvitationsAPI.fulfilled, (state, action) => {
+        const incomingInvitations = action.payload
 
-      state.currentNotifications = Array.isArray(incomingInvitations)
-        ? incomingInvitations.reverse()
-        : []
-    }),
-      builder.addCase(updateBoardInvitationAPI.fulfilled, (state, action) => {
+        state.currentNotifications = Array.isArray(incomingInvitations)
+          ? incomingInvitations.reverse()
+          : []
+      })
+      .addCase(updateBoardInvitationAPI.fulfilled, (state, action) => {
         const incomingInvitation = action.payload
 
         const getInvitation = state.currentNotifications.find(

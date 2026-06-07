@@ -54,9 +54,7 @@ export class LoginPage {
     await this._safeClear(passwordEl)
     await passwordEl.sendKeys(password)
 
-    const submit = await this._waitInteractable(
-      '[data-testid="login-submit"]'
-    )
+    const submit = await this._waitInteractable('[data-testid="login-submit"]')
     await submit.click()
   }
 }

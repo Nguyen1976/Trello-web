@@ -13,7 +13,7 @@ export const useDebounceFn = (fnToDebounce, delay = 500) => {
     throw new Error('Delay value should be a number.')
   }
   // Tương tự cũng trả lỗi luôn nếu fnToDebounce không phải là 1 function
-  if (!fnToDebounce || (typeof fnToDebounce !== 'function')) {
+  if (!fnToDebounce || typeof fnToDebounce !== 'function') {
     throw new Error('Debounce must have a function')
   }
 
